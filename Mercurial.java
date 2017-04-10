@@ -25,17 +25,21 @@ public class Mercurial{
   
   // top portion of the UI
   private JMenuBar menuBar;
-  private JPanel topPanel, topLPanel, topMPanel, topRPanel;
+  private JPanel topPanel, topLPanel, topMPanel, topRPanel, topLBotPanel,
+                 topMBotPanel, topRBotPanel;
   private JMenu mercurial,file,view,event,goal,setting;
   private JLabel shortGoals, tasks, pastDues;
-  private JTextArea goalField, taskField, pastDueFields;
+  private JTextArea goalField, taskField, pastDueField;
   private JScrollPane goalPane, taskPane, duePane;
   private JToolBar goalBar, taskBar, dueBar;
+  private JButton addButtonLeft, removeButtonLeft,addButtonRight, removeButtonRight,
+                  addButtonMid, removeButtonMid;
+  private JMenu sortLeft,sortMid,sortRight;
   private static final int FIELD_COL = 25;
   private static final int FIELD_ROW = 4;
   private static final int BORDER_PADDING = 10;
+  private static final int BOX_PADDING = 30;
   private static final int TOP_GRAYSCALE = 114;
-  private static final int ALPHA_VALUE = 200;
   
   // left portion of the UI
   private JPanel leftPanel,leftPanelTop,leftPanelBot,leftPanelBotTop;
@@ -89,17 +93,37 @@ public class Mercurial{
     menuBar.add(setting);
     mainFrame.setJMenuBar(menuBar);
     
-    // initialize top panel interface
+    // declaring panel objects
     topPanel = new JPanel();
     topPanel.setLayout(new BoxLayout(topPanel,BoxLayout.X_AXIS));
     topLPanel = new JPanel(new BorderLayout());
     topMPanel = new JPanel(new BorderLayout());
     topRPanel = new JPanel(new BorderLayout());
+    topLBotPanel = new JPanel(new BorderLayout());
+    topMBotPanel = new JPanel(new BorderLayout());
+    topRBotPanel = new JPanel(new BorderLayout());
+    
+    // instantiating JButtons and JToolBars
+    goalBar = new JToolBar();
+    addButtonLeft = new JButton("+");
+    removeButtonLeft = new JButton("-");
+    sortLeft = new JMenu("sort");
+    
+    taskBar = new JToolBar();
+    addButtonMid = new JButton("+");
+    removeButtonMid = new JButton("-");
+    sortMid = new JMenu("sort");
+    
+    dueBar = new JToolBar();
+    addButtonRight = new JButton("+");
+    removeButtonRight = new JButton("-");
+    sortRight = new JMenu("sort");
+    
     
     // labels for panels and the corresponding text fields
-    shortGoals = new JLabel("Today's Goals: ");
-    tasks = new JLabel("Daily Tasks: ");
-    pastDues = new JLabel("Past dues: ");
+    shortGoals = new JLabel("  Today's Goals: ");
+    tasks = new JLabel("  Daily Tasks: ");
+    pastDues = new JLabel("  Past Dues: ");
     this.setHeaderFont(shortGoals);
     this.setHeaderFont(tasks);
     this.setHeaderFont(pastDues);
@@ -107,34 +131,64 @@ public class Mercurial{
     // text fields restrictions and make them scrollable
     goalField = new JTextArea(FIELD_ROW,FIELD_COL);
     taskField = new JTextArea(FIELD_ROW,FIELD_COL);
+    pastDueField = new JTextArea(FIELD_ROW,FIELD_COL);
     goalPane = new JScrollPane(goalField);
+    goalPane.setBackground(Color.BLACK);
     taskPane = new JScrollPane(taskField);
+    taskPane.setBackground(Color.BLACK);
+    duePane = new JScrollPane(pastDueField);
+    duePane.setBackground(Color.BLACK);
     
     // add components to top panels
     topLPanel.add(shortGoals,BorderLayout.NORTH);
+    topLPanel.add(topLBotPanel,BorderLayout.SOUTH);
     topLPanel.add(goalPane);
     topMPanel.add(tasks,BorderLayout.NORTH);
+    topMPanel.add(topMBotPanel,BorderLayout.SOUTH);
     topMPanel.add(taskPane);
+    topRPanel.add(pastDues,BorderLayout.NORTH);
+    topRPanel.add(topRBotPanel,BorderLayout.SOUTH);
+    topRPanel.add(duePane);
     
     // set text field wrap around functionality
-    
     goalField.setWrapStyleWord(true);
     goalField.setLineWrap(true);
     taskField.setWrapStyleWord(true);
     taskField.setLineWrap(true);
+    pastDueField.setWrapStyleWord(true);
+    pastDueField.setLineWrap(true);
     
-    // TODO Magic Numbers !!!
-    topPanel.add(Box.createRigidArea(new Dimension(15,0)));
+    // add toolbars to each panel
+    this.addToolBars(topLBotPanel, addButtonLeft, removeButtonLeft
+                     ,sortLeft, goalBar);
+    this.addToolBars(topMBotPanel, addButtonMid, removeButtonMid
+                     ,sortMid, taskBar);
+    this.addToolBars(topRBotPanel, addButtonRight, removeButtonRight
+                     ,sortRight, dueBar);
+    
+    // layout paddings
+    topPanel.add(Box.createRigidArea(new Dimension(BOX_PADDING,0)));
     topPanel.add(topLPanel);
-    topPanel.add(Box.createRigidArea(new Dimension(30,0)));
+    topPanel.add(Box.createRigidArea(new Dimension(BOX_PADDING,0)));
     topPanel.add(topMPanel);
-    topPanel.add(Box.createRigidArea(new Dimension(400,0)));
+    topPanel.add(Box.createRigidArea(new Dimension(BOX_PADDING,0)));
     topPanel.add(topRPanel);
+    topPanel.add(Box.createRigidArea(new Dimension(BOX_PADDING,0)));
     
     // add padding to the topPanel && background color
     topPanel.setBorder(new EmptyBorder(BORDER_PADDING,0,BORDER_PADDING,0));
-    topPanel.setBackground(new Color(TOP_GRAYSCALE,TOP_GRAYSCALE,
-                                     TOP_GRAYSCALE,ALPHA_VALUE));
+    
+    this.setComponentColor(topPanel, TOP_GRAYSCALE);
+    this.setComponentColor(topLBotPanel, TOP_GRAYSCALE);
+    this.setComponentColor(topMBotPanel, TOP_GRAYSCALE);
+    this.setComponentColor(topRBotPanel, TOP_GRAYSCALE);
+    this.setComponentColor(goalField, TOP_GRAYSCALE);
+    this.setComponentColor(taskField, TOP_GRAYSCALE);
+    this.setComponentColor(pastDueField, TOP_GRAYSCALE);
+    this.setComponentColor(goalBar, TOP_GRAYSCALE);
+    this.setComponentColor(taskBar, TOP_GRAYSCALE);
+    this.setComponentColor(dueBar, TOP_GRAYSCALE);
+    
     mainFrame.add(topPanel,BorderLayout.NORTH);
   }
   
@@ -159,12 +213,7 @@ public class Mercurial{
     removeButtonLP = new JButton("-");
     sortLP = new JMenu("sort");
     
-    // adding buttons to toolbar
-    addRemoveBar.add(addButtonLP);
-    addRemoveBar.add(removeButtonLP);
-    addRemoveBar.add(sortLP);
-    addRemoveBar.setFloatable(false);
-    leftPanelBot.add(addRemoveBar,BorderLayout.SOUTH);
+    this.addToolBars(leftPanelBot, addButtonLP, removeButtonLP, sortLP, addRemoveBar);
     leftPanelBot.add(leftPanelBotTop);
     
     leftPanelTop.add(myProductivity);
@@ -179,16 +228,37 @@ public class Mercurial{
     this.setComponentColor(leftPanelBot, LEFT_GRAYSCALE);
     this.setComponentColor(addRemoveBar, LEFT_GRAYSCALE);
     
-    // set JButtons background
-    Font buttonFont = new Font(addButtonLP.getFont().getFontName(),
-                               Font.BOLD,12);
-    addButtonLP.setOpaque(true);
-    addButtonLP.setBorderPainted(false);
-    addButtonLP.setFont(buttonFont);
-    removeButtonLP.setOpaque(true);
-    removeButtonLP.setBorderPainted(false);
-    
     mainFrame.add(leftPanel,BorderLayout.WEST);
+  }
+  
+  /**
+   * add a toolbar to a Jpanel (such toolbar is for add/remove tasks)
+   * 
+   * @param panel: the panel that contains the toolbar
+   * @param addB: the add button
+   * @param removeB: the remove button
+   * @param sort: the sort menu
+   * @param toolbar: the toolbar containing the buttons and menu
+   */
+  private void addToolBars(JPanel panel, JButton addB, JButton removeB, JMenu sort,
+                           JToolBar toolbar){
+    
+    // adding buttons and menus to toolbar
+    toolbar.add(addB);
+    toolbar.add(removeB);
+    toolbar.add(sort);
+    toolbar.setFloatable(false);
+    panel.add(toolbar,BorderLayout.SOUTH);
+    
+    // set JButtons background
+    Font buttonFont = new Font(addB.getFont().getFontName(),
+                               Font.BOLD,12);
+    addB.setOpaque(true);
+    addB.setBorderPainted(false);
+    addB.setFont(buttonFont);
+    removeB.setOpaque(true);
+    removeB.setBorderPainted(false);
+  
   }
   
   public JFrame mainFrame(){
