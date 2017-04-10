@@ -3,6 +3,8 @@ package mercurial;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -14,7 +16,7 @@ import javax.swing.border.EmptyBorder;
  * @since 2017-03-30
  *
  */
-public class TopUI {
+public class TopUI implements ActionListener {
 
   // top portion of the UI
   private JMenuBar menuBar;
@@ -34,6 +36,10 @@ public class TopUI {
   private static final int BOX_PADDING = 30;
   private static final int TOP_GRAYSCALE = 114;
   
+  /**
+   * Ctor for connecting TOP UI with mainframe
+   * @param container: the frame to connect with
+   */
   public TopUI(Mercurial container){
     
     // initialize menu options
@@ -155,6 +161,12 @@ public class TopUI {
     container.setComponentColor(dueBar, TOP_GRAYSCALE);
     
     container.add(topPanel,BorderLayout.NORTH);
+    
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    // TODO Auto-generated method stub
     
   }
   

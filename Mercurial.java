@@ -19,23 +19,13 @@ import java.awt.event.ActionListener;
  */
 
 // TODO need to implement actionListener for button action
-public class Mercurial extends JFrame implements ActionListener{
+public class Mercurial extends JFrame{
 
   // default frame status
   //private JFrame mainFrame;
   private static final int FRAME_WIDTH = 1000;
   private static final int FRAME_HEIGHT = 700;
   private static final int HEADER_FONT_SIZE = 16;
-  
-  // left portion of the UI
-  private JPanel leftPanel,leftPanelTop,leftPanelBot,leftPanelBotTop;
-  private JScrollPane leftScroll;
-  private JLabel myProductivity;
-  private JToolBar addRemoveBar;
-  private JButton addButtonLP, removeButtonLP;
-  private JMenu sortLP;
-  private static final int LEFT_GRAYSCALE = 91;
-  private static final int BORDER_PADDING = 10;
   
   /**
    * display the user interface
@@ -69,37 +59,8 @@ public class Mercurial extends JFrame implements ActionListener{
    */
   private void setLeftUI(){
     
-    // left panel initializations
-    leftPanel = new JPanel(new BorderLayout());
-    leftPanelTop = new JPanel();
-    leftPanelBot = new JPanel(new BorderLayout());
-    leftPanelBotTop = new JPanel();
-    leftScroll = new JScrollPane(leftPanelBotTop);
-    myProductivity = new JLabel("Priority Tasks/Remainders: ");
-    this.setHeaderFont(myProductivity);
+    LeftUI leftUI = new LeftUI(this);
     
-    // components for left bottom panel
-    addRemoveBar = new JToolBar();
-    addButtonLP = new JButton("+");
-    removeButtonLP = new JButton("-");
-    sortLP = new JMenu("sort");
-    
-    this.addToolBars(leftPanelBot, addButtonLP, removeButtonLP, sortLP, addRemoveBar);
-    leftPanelBot.add(leftPanelBotTop);
-    
-    leftPanelTop.add(myProductivity);
-    leftPanel.add(leftPanelTop,BorderLayout.NORTH);
-    leftPanel.add(leftPanelBot);
-    
-    // color settings
-    leftPanel.setBorder(new EmptyBorder(BORDER_PADDING,BORDER_PADDING,
-                                        BORDER_PADDING,BORDER_PADDING));
-    
-    this.setComponentColor(leftPanel, LEFT_GRAYSCALE);
-    this.setComponentColor(leftPanelBot, LEFT_GRAYSCALE);
-    this.setComponentColor(addRemoveBar, LEFT_GRAYSCALE);
-    
-    this.add(leftPanel,BorderLayout.WEST);
   }
   
   /**
@@ -172,14 +133,6 @@ public class Mercurial extends JFrame implements ActionListener{
     
     Mercurial myApp = new Mercurial();
     myApp.displayUI();
-    
-  }
-
-  /**
-   * Button actions
-   */
-  public void actionPerformed(ActionEvent e) {
-   
     
   }
   
