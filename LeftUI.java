@@ -40,7 +40,7 @@ public class LeftUI implements ActionListener{
     leftPanelBot = new JPanel(new BorderLayout());
     leftPanelBotTop = new JPanel();
     leftScroll = new JScrollPane(leftPanelBotTop);
-    myProductivity = new JLabel("Priority Tasks/Remainders: ");
+    myProductivity = new JLabel("Priority Tasks/Reminders: ");
     frame.setHeaderFont(myProductivity);
     
     // components for left bottom panel

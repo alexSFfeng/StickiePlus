@@ -6,7 +6,16 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
 /**
  * Panels for the program: tool bars, info display
@@ -30,11 +39,18 @@ public class TopUI implements ActionListener {
   private JButton addButtonLeft, removeButtonLeft,addButtonRight, removeButtonRight,
                   addButtonMid, removeButtonMid;
   private JMenu sortLeft,sortMid,sortRight;
+
   private static final int FIELD_COL = 25;
   private static final int FIELD_ROW = 4;
   private static final int BORDER_PADDING = 10;
   private static final int BOX_PADDING = 30;
   private static final int TOP_GRAYSCALE = 114;
+  private static final String ADD_GOAL = "add goal boxField";
+  private static final String REMOVE_GOAL = "remove goal boxField";
+  private static final String ADD_TASK = "add task boxField";
+  private static final String REMOVE_TASK = "remove task boxField";
+  private static final String ADD_PASTDUE = "add due boxField";
+  private static final String REMOVE_PASTDUE = "remove due boxField";
   
   /**
    * Ctor for connecting TOP UI with mainframe
@@ -73,19 +89,32 @@ public class TopUI implements ActionListener {
     // instantiating JButtons and JToolBars
     goalBar = new JToolBar();
     addButtonLeft = new JButton("+");
+    addButtonLeft.setActionCommand(ADD_GOAL);
     removeButtonLeft = new JButton("-");
+    removeButtonLeft.setActionCommand(REMOVE_GOAL);
     sortLeft = new JMenu("sort");
     
     taskBar = new JToolBar();
     addButtonMid = new JButton("+");
+    addButtonMid.setActionCommand(ADD_TASK);
     removeButtonMid = new JButton("-");
+    removeButtonMid.setActionCommand(REMOVE_TASK);
     sortMid = new JMenu("sort");
     
     dueBar = new JToolBar();
     addButtonRight = new JButton("+");
+    addButtonRight.setActionCommand(ADD_PASTDUE);
     removeButtonRight = new JButton("-");
+    removeButtonRight.setActionCommand(REMOVE_PASTDUE);
     sortRight = new JMenu("sort");
     
+    // add this UI as listener to the buttons.
+    addButtonLeft.addActionListener(this);
+    addButtonMid.addActionListener(this);
+    addButtonRight.addActionListener(this);
+    removeButtonLeft.addActionListener(this);
+    removeButtonMid.addActionListener(this);
+    removeButtonRight.addActionListener(this);
     
     // labels for panels and the corresponding text fields
     shortGoals = new JLabel("  Today's Goals: ");
@@ -164,10 +193,39 @@ public class TopUI implements ActionListener {
     
   }
 
+  /**
+   * Controls what happen when add/remove buttons are clicked for each text
+   * pane.
+   * 
+   * @param e:
+   *          the button clicked event to be tracked
+   */
   @Override
   public void actionPerformed(ActionEvent e) {
-    // TODO Auto-generated method stub
     
+    if (e.getActionCommand().equals(ADD_GOAL)) {
+
+    }
+
+    if (e.getActionCommand().equals(ADD_TASK)) {
+
+    }
+
+    if (e.getActionCommand().equals(ADD_PASTDUE)) {
+
+    }
+
+    if (e.getActionCommand().equals(REMOVE_GOAL)) {
+
+    }
+
+    if (e.getActionCommand().equals(REMOVE_TASK)) {
+
+    }
+
+    if (e.getActionCommand().equals(REMOVE_PASTDUE)) {
+
+    }
   }
   
 }
