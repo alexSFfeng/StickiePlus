@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -14,7 +15,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
 /**
@@ -33,18 +33,24 @@ public class TopUI implements ActionListener {
                  topMBotPanel, topRBotPanel;
   private JMenu mercurial,file,view,event,goal,setting;
   private JLabel shortGoals, tasks, pastDues;
-  private JTextArea goalField, taskField, pastDueField;
+  private JPanel goalField, taskField, pastDueField;
   private JScrollPane goalPane, taskPane, duePane;
   private JToolBar goalBar, taskBar, dueBar;
   private JButton addButtonLeft, removeButtonLeft,addButtonRight, removeButtonRight,
                   addButtonMid, removeButtonMid;
   private JMenu sortLeft,sortMid,sortRight;
 
-  private static final int FIELD_COL = 25;
+  // top ui constants for border and view port area
+  private static final int BORDER_STROKE = 2;
+  private static final int FIELD_COL = 100;
   private static final int FIELD_ROW = 4;
+
+  // padding between each task box
   private static final int BORDER_PADDING = 10;
   private static final int BOX_PADDING = 30;
   private static final int TOP_GRAYSCALE = 114;
+
+  // labels
   private static final String ADD_GOAL = "add goal boxField";
   private static final String REMOVE_GOAL = "remove goal boxField";
   private static final String ADD_TASK = "add task boxField";
@@ -85,28 +91,29 @@ public class TopUI implements ActionListener {
     topLBotPanel = new JPanel(new BorderLayout());
     topMBotPanel = new JPanel(new BorderLayout());
     topRBotPanel = new JPanel(new BorderLayout());
-    
+
+
     // instantiating JButtons and JToolBars
     goalBar = new JToolBar();
     addButtonLeft = new JButton("+");
     addButtonLeft.setActionCommand(ADD_GOAL);
     removeButtonLeft = new JButton("-");
     removeButtonLeft.setActionCommand(REMOVE_GOAL);
-    sortLeft = new JMenu("sort");
+    sortLeft = new JMenu("SORT");
     
     taskBar = new JToolBar();
     addButtonMid = new JButton("+");
     addButtonMid.setActionCommand(ADD_TASK);
     removeButtonMid = new JButton("-");
     removeButtonMid.setActionCommand(REMOVE_TASK);
-    sortMid = new JMenu("sort");
+    sortMid = new JMenu("SORT");
     
     dueBar = new JToolBar();
     addButtonRight = new JButton("+");
     addButtonRight.setActionCommand(ADD_PASTDUE);
     removeButtonRight = new JButton("-");
     removeButtonRight.setActionCommand(REMOVE_PASTDUE);
-    sortRight = new JMenu("sort");
+    sortRight = new JMenu("SORT");
     
     // add this UI as listener to the buttons.
     addButtonLeft.addActionListener(this);
@@ -124,20 +131,26 @@ public class TopUI implements ActionListener {
     container.setHeaderFont(tasks);
     container.setHeaderFont(pastDues);
     
-    // text fields restrictions and make them scrollable
-    goalField = new JTextArea(FIELD_ROW,FIELD_COL);
-    taskField = new JTextArea(FIELD_ROW,FIELD_COL);
-    pastDueField = new JTextArea(FIELD_ROW,FIELD_COL);
-    // the big fields are not editable.
-    goalField.setEditable(false);
-    taskField.setEditable(false);
-    pastDueField.setEditable(false);
+    // Panels for storing tasks and goals
+    goalField = new JPanel();
+    taskField = new JPanel();
+    pastDueField = new JPanel();
+    goalField.setPreferredSize(new Dimension(FIELD_ROW, FIELD_COL));
+    taskField.setPreferredSize(new Dimension(FIELD_ROW, FIELD_COL));
+    pastDueField.setPreferredSize(new Dimension(FIELD_ROW, FIELD_COL));
+
+    // scrollable panel
     goalPane = new JScrollPane(goalField);
-    goalPane.setBackground(Color.BLACK);
     taskPane = new JScrollPane(taskField);
-    taskPane.setBackground(Color.BLACK);
     duePane = new JScrollPane(pastDueField);
-    duePane.setBackground(Color.BLACK);
+
+    // set up the border for top ui scroll panes
+    goalPane
+        .setBorder(BorderFactory.createLineBorder(Color.BLACK, BORDER_STROKE));
+    taskPane
+        .setBorder(BorderFactory.createLineBorder(Color.BLACK, BORDER_STROKE));
+    duePane
+        .setBorder(BorderFactory.createLineBorder(Color.BLACK, BORDER_STROKE));
     
     // add components to top panels
     topLPanel.add(shortGoals,BorderLayout.NORTH);
@@ -150,13 +163,6 @@ public class TopUI implements ActionListener {
     topRPanel.add(topRBotPanel,BorderLayout.SOUTH);
     topRPanel.add(duePane);
     
-    // set text field wrap around functionality
-    goalField.setWrapStyleWord(true);
-    goalField.setLineWrap(true);
-    taskField.setWrapStyleWord(true);
-    taskField.setLineWrap(true);
-    pastDueField.setWrapStyleWord(true);
-    pastDueField.setLineWrap(true);
     
     // add toolbars to each panel
     container.addToolBars(topLBotPanel, addButtonLeft, removeButtonLeft
@@ -228,4 +234,20 @@ public class TopUI implements ActionListener {
     }
   }
   
+  /*
+   * 
+   * set text field wrap around functionality goalField.setWrapStyleWord(true);
+   * goalField.setLineWrap(true); taskField.setWrapStyleWord(true);
+   * taskField.setLineWrap(true); pastDueField.setWrapStyleWord(true);
+   * pastDueField.setLineWrap(true);
+   * 
+   * 
+   * // text fields restrictions and make them scrollable goalField = new
+   * JTextArea(FIELD_ROW,FIELD_COL); taskField = new
+   * JTextArea(FIELD_ROW,FIELD_COL); pastDueField = new
+   * JTextArea(FIELD_ROW,FIELD_COL); // the big fields are not editable.
+   * goalField.setEditable(false); taskField.setEditable(false);
+   * pastDueField.setEditable(false);
+   */
+
 }

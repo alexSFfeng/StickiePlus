@@ -1,11 +1,18 @@
 package mercurial;
 
-import java.util.*;
-import java.lang.*;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 /**
  * Application for self Organization, scheduling, goals,
@@ -64,11 +71,16 @@ public class Mercurial extends JFrame{
   /**
    * add a toolbar to a Jpanel (such toolbar is for add/remove tasks)
    * 
-   * @param panel: the panel that contains the toolbar
-   * @param addB: the add button
-   * @param removeB: the remove button
-   * @param sort: the sort menu
-   * @param toolbar: the toolbar containing the buttons and menu
+   * @param panel:
+   *          the panel that contains the toolbar
+   * @param addB:
+   *          the add button
+   * @param removeB:
+   *          the remove button
+   * @param sort:
+   *          the sort menu (optional)
+   * @param toolbar:
+   *          the toolbar containing the buttons and menu
    */
   public void addToolBars(JPanel panel, JButton addB, JButton removeB, JMenu sort,
                           JToolBar toolbar){
@@ -76,7 +88,9 @@ public class Mercurial extends JFrame{
     // adding buttons and menus to toolbar
     toolbar.add(addB);
     toolbar.add(removeB);
-    toolbar.add(sort);
+    if (sort != null) {
+      toolbar.add(sort);
+    }
     toolbar.setFloatable(false);
     panel.add(toolbar,BorderLayout.SOUTH);
     
@@ -91,6 +105,11 @@ public class Mercurial extends JFrame{
   
   }
   
+  /**
+   * return the mainframe reference
+   * 
+   * @return the main frame of this program
+   */
   public JFrame mainFrame(){
     return this;
   }
