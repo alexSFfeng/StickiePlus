@@ -1,9 +1,11 @@
 package mercurial;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -29,6 +31,8 @@ public class LeftUI implements ActionListener{
   private JToolBar addRemoveBar;
   private JButton addButtonLP, removeButtonLP;
   private JMenu sortLP;
+
+  private static final int BORDER_STROKE = 3;
   private static final int LEFT_GRAYSCALE = 91;
   private static final int BORDER_PADDING = 10;
   
@@ -43,14 +47,18 @@ public class LeftUI implements ActionListener{
     myProductivity = new JLabel("Priority Tasks/Reminders: ");
     frame.setHeaderFont(myProductivity);
     
+    // scroll pane modifications
+    leftScroll
+        .setBorder(BorderFactory.createLineBorder(Color.BLACK, BORDER_STROKE));
+
     // components for left bottom panel
     addRemoveBar = new JToolBar();
     addButtonLP = new JButton("+");
     removeButtonLP = new JButton("-");
-    sortLP = new JMenu("sort");
+    sortLP = new JMenu("SORT");
     
     frame.addToolBars(leftPanelBot, addButtonLP, removeButtonLP, sortLP, addRemoveBar);
-    leftPanelBot.add(leftPanelBotTop);
+    leftPanelBot.add(leftScroll);
     
     leftPanelTop.add(myProductivity);
     leftPanel.add(leftPanelTop,BorderLayout.NORTH);
@@ -62,6 +70,7 @@ public class LeftUI implements ActionListener{
     
     frame.setComponentColor(leftPanel, LEFT_GRAYSCALE);
     frame.setComponentColor(leftPanelBot, LEFT_GRAYSCALE);
+    frame.setComponentColor(leftPanelBotTop, LEFT_GRAYSCALE);
     frame.setComponentColor(addRemoveBar, LEFT_GRAYSCALE);
     
     frame.add(leftPanel,BorderLayout.WEST);
