@@ -29,7 +29,7 @@ public class LeftUI implements ActionListener{
   private JScrollPane leftScroll;
   private JLabel myProductivity;
   private JToolBar addRemoveBar;
-  private JButton addButtonLP, removeButtonLP;
+  private JButton addButtonLP, removeButtonLP, selectButton;
   private JMenu sortLP;
 
   private static final int BORDER_STROKE = 3;
@@ -55,9 +55,12 @@ public class LeftUI implements ActionListener{
     addRemoveBar = new JToolBar();
     addButtonLP = new JButton("+");
     removeButtonLP = new JButton("-");
+    selectButton = new JButton("Select All");
     sortLP = new JMenu("SORT");
     
-    frame.addToolBars(leftPanelBot, addButtonLP, removeButtonLP, sortLP, addRemoveBar);
+    // adding components to frame
+    frame.addToolBars(leftPanelBot, addButtonLP, removeButtonLP, selectButton,
+        sortLP, addRemoveBar);
     leftPanelBot.add(leftScroll);
     
     leftPanelTop.add(myProductivity);
@@ -75,6 +78,11 @@ public class LeftUI implements ActionListener{
     
     frame.add(leftPanel,BorderLayout.WEST);
     
+    // listen to button actions
+    addButtonLP.addActionListener(this);
+    removeButtonLP.addActionListener(this);
+    selectButton.addActionListener(this);
+
   }
 
   @Override

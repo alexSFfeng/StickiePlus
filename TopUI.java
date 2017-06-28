@@ -36,8 +36,9 @@ public class TopUI implements ActionListener {
   private JPanel goalField, taskField, pastDueField;
   private JScrollPane goalPane, taskPane, duePane;
   private JToolBar goalBar, taskBar, dueBar;
-  private JButton addButtonLeft, removeButtonLeft,addButtonRight, removeButtonRight,
-                  addButtonMid, removeButtonMid;
+  private JButton addButtonLeft, removeButtonLeft, selectButtonLeft,
+      addButtonRight, removeButtonRight, selectButtonRight, addButtonMid,
+      removeButtonMid, selectButtonMid;
   private JMenu sortLeft,sortMid,sortRight;
 
   // top ui constants for border and view port area
@@ -50,13 +51,16 @@ public class TopUI implements ActionListener {
   private static final int BOX_PADDING = 30;
   private static final int TOP_GRAYSCALE = 114;
 
-  // labels
+  // constant strings
   private static final String ADD_GOAL = "add goal boxField";
   private static final String REMOVE_GOAL = "remove goal boxField";
+  private static final String SELECT_GOALS = "select all goals";
   private static final String ADD_TASK = "add task boxField";
   private static final String REMOVE_TASK = "remove task boxField";
+  private static final String SELECT_TASKS = "select all tasks";
   private static final String ADD_PASTDUE = "add due boxField";
   private static final String REMOVE_PASTDUE = "remove due boxField";
+  private static final String SELECT_DUES = "select all dues";
   
   /**
    * Ctor for connecting TOP UI with mainframe
@@ -99,6 +103,8 @@ public class TopUI implements ActionListener {
     addButtonLeft.setActionCommand(ADD_GOAL);
     removeButtonLeft = new JButton("-");
     removeButtonLeft.setActionCommand(REMOVE_GOAL);
+    selectButtonLeft = new JButton("Select All");
+    selectButtonLeft.setActionCommand(SELECT_GOALS);
     sortLeft = new JMenu("SORT");
     
     taskBar = new JToolBar();
@@ -106,6 +112,8 @@ public class TopUI implements ActionListener {
     addButtonMid.setActionCommand(ADD_TASK);
     removeButtonMid = new JButton("-");
     removeButtonMid.setActionCommand(REMOVE_TASK);
+    selectButtonMid = new JButton("Select All");
+    selectButtonMid.setActionCommand("SELECT_TASKS");
     sortMid = new JMenu("SORT");
     
     dueBar = new JToolBar();
@@ -113,6 +121,8 @@ public class TopUI implements ActionListener {
     addButtonRight.setActionCommand(ADD_PASTDUE);
     removeButtonRight = new JButton("-");
     removeButtonRight.setActionCommand(REMOVE_PASTDUE);
+    selectButtonRight = new JButton("Select All");
+    selectButtonRight.setActionCommand(SELECT_DUES);
     sortRight = new JMenu("SORT");
     
     // add this UI as listener to the buttons.
@@ -165,12 +175,12 @@ public class TopUI implements ActionListener {
     
     
     // add toolbars to each panel
-    container.addToolBars(topLBotPanel, addButtonLeft, removeButtonLeft
-                     ,sortLeft, goalBar);
-    container.addToolBars(topMBotPanel, addButtonMid, removeButtonMid
-                     ,sortMid, taskBar);
-    container.addToolBars(topRBotPanel, addButtonRight, removeButtonRight
-                     ,sortRight, dueBar);
+    container.addToolBars(topLBotPanel, addButtonLeft, removeButtonLeft,
+        selectButtonLeft, sortLeft, goalBar);
+    container.addToolBars(topMBotPanel, addButtonMid, removeButtonMid,
+        selectButtonMid, sortMid, taskBar);
+    container.addToolBars(topRBotPanel, addButtonRight, removeButtonRight,
+        selectButtonRight, sortRight, dueBar);
     
     // layout paddings
     topPanel.add(Box.createRigidArea(new Dimension(BOX_PADDING,0)));
@@ -209,6 +219,8 @@ public class TopUI implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     
+    /*----------------------ADDING--------------------------*/
+
     if (e.getActionCommand().equals(ADD_GOAL)) {
 
     }
@@ -221,6 +233,8 @@ public class TopUI implements ActionListener {
 
     }
 
+    /*-----------------------REMOVING----------------------*/
+
     if (e.getActionCommand().equals(REMOVE_GOAL)) {
 
     }
@@ -232,22 +246,21 @@ public class TopUI implements ActionListener {
     if (e.getActionCommand().equals(REMOVE_PASTDUE)) {
 
     }
+
+    /*-----------------------SELECTING----------------------*/
+
+    if (e.getActionCommand().equals(SELECT_GOALS)) {
+
+    }
+
+    if (e.getActionCommand().equals(SELECT_TASKS)) {
+
+    }
+
+    if (e.getActionCommand().equals(SELECT_DUES)) {
+
+    }
+
   }
   
-  /*
-   * 
-   * set text field wrap around functionality goalField.setWrapStyleWord(true);
-   * goalField.setLineWrap(true); taskField.setWrapStyleWord(true);
-   * taskField.setLineWrap(true); pastDueField.setWrapStyleWord(true);
-   * pastDueField.setLineWrap(true);
-   * 
-   * 
-   * // text fields restrictions and make them scrollable goalField = new
-   * JTextArea(FIELD_ROW,FIELD_COL); taskField = new
-   * JTextArea(FIELD_ROW,FIELD_COL); pastDueField = new
-   * JTextArea(FIELD_ROW,FIELD_COL); // the big fields are not editable.
-   * goalField.setEditable(false); taskField.setEditable(false);
-   * pastDueField.setEditable(false);
-   */
-
 }

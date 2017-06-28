@@ -44,6 +44,7 @@ public class Mercurial extends JFrame{
     this.getContentPane().setBackground(Color.DARK_GRAY);
     this.setTopUI();
     this.setLeftUI();
+    this.validate();
     
     this.setVisible(true);
   }
@@ -77,17 +78,20 @@ public class Mercurial extends JFrame{
    *          the add button
    * @param removeB:
    *          the remove button
+   * @param selectAll:
+   *          button to select all the boxes
    * @param sort:
    *          the sort menu (optional)
    * @param toolbar:
    *          the toolbar containing the buttons and menu
    */
-  public void addToolBars(JPanel panel, JButton addB, JButton removeB, JMenu sort,
-                          JToolBar toolbar){
+  public void addToolBars(JPanel panel, JButton addB, JButton removeB,
+      JButton selectAll, JMenu sort, JToolBar toolbar) {
     
     // adding buttons and menus to toolbar
     toolbar.add(addB);
     toolbar.add(removeB);
+    toolbar.add(selectAll);
     if (sort != null) {
       toolbar.add(sort);
     }
@@ -96,12 +100,16 @@ public class Mercurial extends JFrame{
     
     // set JButtons background
     Font buttonFont = new Font(addB.getFont().getFontName(),
-                               Font.BOLD,12);
+        Font.BOLD, 10);
+
+    // button appearance
     addB.setOpaque(true);
     addB.setBorderPainted(false);
     addB.setFont(buttonFont);
     removeB.setOpaque(true);
     removeB.setBorderPainted(false);
+    selectAll.setOpaque(true);
+    selectAll.setBorderPainted(false);
   
   }
   
@@ -149,6 +157,7 @@ public class Mercurial extends JFrame{
   public static void main(String [] args){
     
     Mercurial myApp = new Mercurial();
+    myApp.setDefaultCloseOperation(EXIT_ON_CLOSE);
     myApp.displayUI();
     
   }
