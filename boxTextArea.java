@@ -1,6 +1,7 @@
 package mercurial;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -22,13 +23,13 @@ import javax.swing.event.ChangeListener;
  * @since 2017-04-10
  *
  */
-public class boxTextArea implements ItemListener, ChangeListener {
+public class boxTextArea extends JPanel
+    implements ItemListener, ChangeListener {
 
   // components of a boxTextArea
   private JTextArea editable;
   private JCheckBox checkbox;
   private JScrollPane boxAreaPane;
-  private JPanel boxPanel;
   private JSlider prioritySlider;
   
   // determines whether or not this box is selected
@@ -36,31 +37,34 @@ public class boxTextArea implements ItemListener, ChangeListener {
   // the priority level of this task
   private int priorityLv;
 
+  // appearance constants
   private static final int FIELD_COL = 22;
   private static final int FIELD_ROW = 5;
   private static final int MAX_PRIORITY = 10;
   private static final int MIN_PRIORITY = 1;
+  private static final Color PANEL_COLOR = new Color(51, 133, 255);
+  private static final Color BOX_COLOR = new Color(255, 255, 55);
 
   public boxTextArea() {
 
     // instantiate components for a checkbox and corresponding text area
-    boxPanel = new JPanel(new BorderLayout());
+    this.setLayout(new BorderLayout());
     editable = new JTextArea(FIELD_COL, FIELD_ROW);
     checkbox = new JCheckBox();
     boxAreaPane = new JScrollPane(editable);
     prioritySlider = new JSlider(MIN_PRIORITY, MAX_PRIORITY);
 
     // adding check box and text area to the panel
-    boxPanel.add(checkbox, BorderLayout.WEST);
-    boxPanel.add(prioritySlider, BorderLayout.SOUTH);
-    boxPanel.add(boxAreaPane);
+    this.add(checkbox, BorderLayout.WEST);
+    this.add(prioritySlider, BorderLayout.SOUTH);
+    this.add(boxAreaPane);
 
     // the wrap around functionality of the text area
     editable.setWrapStyleWord(true);
     editable.setLineWrap(true);
 
     // not editable until selected/focused
-    editable.setEditable(false);
+    editable.setEditable(true);
 
     // slider appearance.
     prioritySlider.setMajorTickSpacing(1);
@@ -70,6 +74,8 @@ public class boxTextArea implements ItemListener, ChangeListener {
     checkbox.addItemListener(this);
     prioritySlider.addChangeListener(this);
 
+    this.setBackground(PANEL_COLOR);
+    editable.setBackground(BOX_COLOR);
   }
 
   /**
@@ -86,7 +92,6 @@ public class boxTextArea implements ItemListener, ChangeListener {
       this.prioritySlider.setVisible(true);
       this.prioritySlider.setEnabled(true);
       editable.setEditable(true);
-      
     } else {
       
       this.selected = false;
@@ -114,6 +119,8 @@ public class boxTextArea implements ItemListener, ChangeListener {
   
   /**
    * Get the priority level of this task
+   * 
+   * @return the priority level of the this task
    */
   public int getPriorityLv(){
     return this.priorityLv;
@@ -121,9 +128,19 @@ public class boxTextArea implements ItemListener, ChangeListener {
   
   /**
    * Get the current selected status of the boxTextArea
+   * 
+   * @return the current selection status
    */
   public boolean isSelected(){
     return this.selected;
+  }
+
+  /**
+   * Set the selected status of the boxTextArea (toggle effect)
+   */
+  public void setSelected(boolean select) {
+    this.selected = select;
+    checkbox.setSelected(select);
   }
 
 }
