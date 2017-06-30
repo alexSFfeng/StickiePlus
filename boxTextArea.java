@@ -2,6 +2,7 @@ package mercurial;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -38,18 +39,24 @@ public class boxTextArea extends JPanel
   private int priorityLv;
 
   // appearance constants
+  private static final int SLOT_WIDTH = 200;
+  private static final int SLOT_HEIGHT = 100;
   private static final int FIELD_COL = 22;
-  private static final int FIELD_ROW = 5;
+  private static final int FIELD_ROW = 4;
   private static final int MAX_PRIORITY = 10;
   private static final int MIN_PRIORITY = 1;
   private static final Color PANEL_COLOR = new Color(51, 133, 255);
   private static final Color BOX_COLOR = new Color(255, 255, 55);
+  private static final Dimension SLIDER_SIZE = new Dimension(300, 15);
+  private static final Dimension SLIDER_PREFERRED_SIZE = new Dimension(300, 35);
 
-  public boxTextArea() {
+  public boxTextArea(JPanel mainPanel) {
 
     // instantiate components for a checkbox and corresponding text area
     this.setLayout(new BorderLayout());
-    editable = new JTextArea(FIELD_COL, FIELD_ROW);
+    this.setSize(new Dimension(SLOT_WIDTH, SLOT_HEIGHT));
+    this.setPreferredSize(new Dimension(SLOT_WIDTH, SLOT_HEIGHT));
+    editable = new JTextArea(FIELD_ROW, FIELD_COL);
     checkbox = new JCheckBox();
     boxAreaPane = new JScrollPane(editable);
     prioritySlider = new JSlider(MIN_PRIORITY, MAX_PRIORITY);
@@ -62,20 +69,23 @@ public class boxTextArea extends JPanel
     // the wrap around functionality of the text area
     editable.setWrapStyleWord(true);
     editable.setLineWrap(true);
-
-    // not editable until selected/focused
     editable.setEditable(true);
 
     // slider appearance.
     prioritySlider.setMajorTickSpacing(1);
     prioritySlider.setPaintTicks(true);
     prioritySlider.setPaintLabels(true);
+    prioritySlider.setSize(SLIDER_SIZE);
+    prioritySlider.setPreferredSize(SLIDER_PREFERRED_SIZE);
+    prioritySlider.setVisible(false);
 
     checkbox.addItemListener(this);
     prioritySlider.addChangeListener(this);
 
     this.setBackground(PANEL_COLOR);
     editable.setBackground(BOX_COLOR);
+
+    mainPanel.add(this);
   }
 
   /**
@@ -92,12 +102,14 @@ public class boxTextArea extends JPanel
       this.prioritySlider.setVisible(true);
       this.prioritySlider.setEnabled(true);
       editable.setEditable(true);
+      System.out.println("CAN EDIT");
     } else {
       
       this.selected = false;
       this.prioritySlider.setVisible(false);
       this.prioritySlider.setEnabled(false);
       editable.setEditable(false);
+      System.out.println("CAN'T EDIT");
     }
 
   }
@@ -143,4 +155,10 @@ public class boxTextArea extends JPanel
     checkbox.setSelected(select);
   }
 
+  /**
+   * Give focus to textArea
+   */
+  public void getFocus() {
+    this.editable.grabFocus();
+  }
 }
