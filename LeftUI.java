@@ -6,10 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -35,12 +34,12 @@ public class LeftUI {
   private JMenu sortLP;
 
   // List of priority goals
-  private JList priorityList;
-  private DefaultListModel<boxTextArea> model;
+  /*
+   * private JList priorityList; private DefaultListModel<boxTextArea> model;
+   * private DefaultListSelectionModel selectModel;
+   */
 
   // appearance constants
-  private static final int SLOT_WIDTH = 300;
-  private static final int SLOT_HEIGHT = 80;
   private static final int BORDER_STROKE = 3;
   private static final int LEFT_GRAYSCALE = 91;
   private static final int BORDER_PADDING = 10;
@@ -53,9 +52,11 @@ public class LeftUI {
     leftPanelTop = new JPanel();
     leftPanelBot = new JPanel(new BorderLayout());
     leftPanelBotTop = new JPanel();
-    model = new DefaultListModel<boxTextArea>();
-    priorityList = new JList<boxTextArea>(model);
-    leftScroll = new JScrollPane(priorityList);
+    leftPanelBotTop.setLayout(new BoxLayout(leftPanelBotTop, BoxLayout.Y_AXIS));
+    // model = new DefaultListModel<boxTextArea>();
+    // selectModel = new DefaultListSelectionModel();
+    // priorityList = new JList<boxTextArea>(model);
+    leftScroll = new JScrollPane(leftPanelBotTop);
     myProductivity = new JLabel("Priority Tasks/Reminders: ");
     frame.setHeaderFont(myProductivity);
     
@@ -64,9 +65,24 @@ public class LeftUI {
         .setBorder(BorderFactory.createLineBorder(Color.BLACK, BORDER_STROKE));
 
     // List appearances
-    priorityList.setCellRenderer(new boxTextCellRender());
-    priorityList.setFixedCellWidth(SLOT_WIDTH);
-    priorityList.setFixedCellHeight(SLOT_HEIGHT);
+    /*
+     * priorityList.setCellRenderer(new boxTextCellRender());
+     * priorityList.setFixedCellWidth(SLOT_WIDTH);
+     * priorityList.setFixedCellHeight(SLOT_HEIGHT);
+     * 
+     * // List selection settings priorityList.setSelectionModel(selectModel);
+     * selectModel.addListSelectionListener(new ListSelectionListener() {
+     * 
+     * @Override public void valueChanged(ListSelectionEvent e) { int
+     * selectedIndex = priorityList.getSelectedIndex();
+     * 
+     * model.getElementAt(selectedIndex).setSelected(true);
+     * model.getElementAt(selectedIndex).getFocus();
+     * 
+     * }
+     * 
+     * });
+     */
 
     // components for left bottom panel
     addRemoveBar = new JToolBar();
@@ -106,8 +122,9 @@ public class LeftUI {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      model.addElement(new boxTextArea());
-
+      System.out.println("HI");
+      new boxTextArea(leftPanelBotTop);
+      leftPanelBotTop.revalidate();
     }
   }
 
@@ -117,11 +134,8 @@ public class LeftUI {
     public void actionPerformed(ActionEvent e) {
 
       // remove all the selected boxes
-      for (int i = 0; i < model.size(); i++) {
-        if (model.getElementAt(i).isSelected()) {
-          model.remove(i);
-          i--;
-        }
+      for (int i = 0; i < leftPanelBotTop.getComponentCount(); i++) {
+
       }
 
     }
@@ -133,9 +147,7 @@ public class LeftUI {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-      for (int i = 0; i < model.size(); i++) {
-        model.getElementAt(i).setSelected(true);
-      }
+
 
     }
     
