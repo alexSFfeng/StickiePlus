@@ -24,7 +24,7 @@ import javax.swing.event.ChangeListener;
  * @since 2017-04-10
  *
  */
-public class boxTextArea extends JPanel
+public class BoxTextArea extends JPanel
     implements ItemListener, ChangeListener {
 
   // components of a boxTextArea
@@ -50,7 +50,7 @@ public class boxTextArea extends JPanel
   private static final Dimension SLIDER_SIZE = new Dimension(300, 15);
   private static final Dimension SLIDER_PREFERRED_SIZE = new Dimension(300, 35);
 
-  public boxTextArea(JPanel mainPanel) {
+  public BoxTextArea(JPanel mainPanel) {
 
     // instantiate components for a checkbox and corresponding text area
     this.setLayout(new BorderLayout());
@@ -155,10 +155,4 @@ public class boxTextArea extends JPanel
     checkbox.setSelected(select);
   }
 
-  /**
-   * Give focus to textArea
-   */
-  public void getFocus() {
-    this.editable.grabFocus();
-  }
 }
