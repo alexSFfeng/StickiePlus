@@ -4,12 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
@@ -31,7 +31,7 @@ public class LeftUI {
   private JLabel myProductivity;
   private JToolBar addRemoveBar;
   private JButton addButtonLP, removeButtonLP, selectButton;
-  private JMenu sortLP;
+  private JButton sortHighToLow, sortLowToHigh;
 
   // appearance constants
   private static final int BORDER_STROKE = 3;
@@ -59,11 +59,12 @@ public class LeftUI {
     addButtonLP = new JButton("+");
     removeButtonLP = new JButton("-");
     selectButton = new JButton("Select All");
-    sortLP = new JMenu("SORT");
-    
+    sortHighToLow = new JButton("Sort: ^");
+    sortLowToHigh = new JButton("Sort: v");
+
     // adding components to frame
     frame.addToolBars(leftPanelBot, addButtonLP, removeButtonLP, selectButton,
-        sortLP, addRemoveBar);
+        sortHighToLow, sortLowToHigh, addRemoveBar);
     leftPanelBot.add(leftScroll);
     
     leftPanelTop.add(myProductivity);
@@ -85,6 +86,8 @@ public class LeftUI {
     addButtonLP.addActionListener(new AddButton());
     removeButtonLP.addActionListener(new RemoveButton());
     selectButton.addActionListener(new SelectButton());
+    sortHighToLow.addActionListener(new SortHighToLow());
+    sortLowToHigh.addActionListener(new SortLowToHigh());
 
   }
 
@@ -130,4 +133,32 @@ public class LeftUI {
     }
   }
 
+  private class SortHighToLow implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+      System.out.print(
+          ((BoxTextArea) leftPanelBotTop.getComponent(0)).getPriorityLv());
+      Arrays.sort(leftPanelBotTop.getComponents(), new BoxComparator());
+      //
+      leftPanelBotTop.revalidate();
+      leftPanelBotTop.repaint();
+      System.out.print(
+          ((BoxTextArea) leftPanelBotTop.getComponent(0)).getPriorityLv());
+
+    }
+
+  }
+
+  private class SortLowToHigh implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+      Arrays.sort(leftPanelBotTop.getComponents(), new BoxReverseComparator());
+
+    }
+
+  }
 }

@@ -10,7 +10,6 @@ import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
@@ -86,15 +85,14 @@ public class Mercurial extends JFrame{
    *          the toolbar containing the buttons and menu
    */
   public void addToolBars(JPanel panel, JButton addB, JButton removeB,
-      JButton selectAll, JMenu sort, JToolBar toolbar) {
+      JButton selectAll, JButton sortHL, JButton sortLH, JToolBar toolbar) {
     
     // adding buttons and menus to toolbar
     toolbar.add(addB);
     toolbar.add(removeB);
     toolbar.add(selectAll);
-    if (sort != null) {
-      toolbar.add(sort);
-    }
+    toolbar.add(sortHL);
+    toolbar.add(sortLH);
     toolbar.setFloatable(false);
     panel.add(toolbar,BorderLayout.SOUTH);
     
@@ -103,13 +101,12 @@ public class Mercurial extends JFrame{
         Font.BOLD, 10);
 
     // button appearance
-    addB.setOpaque(true);
     addB.setBorderPainted(false);
     addB.setFont(buttonFont);
-    removeB.setOpaque(true);
     removeB.setBorderPainted(false);
-    selectAll.setOpaque(true);
     selectAll.setBorderPainted(false);
+    sortHL.setBorderPainted(false);
+    sortLH.setBorderPainted(false);
   
   }
   

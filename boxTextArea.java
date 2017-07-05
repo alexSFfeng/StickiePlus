@@ -78,6 +78,7 @@ public class BoxTextArea extends JPanel
     prioritySlider.setSize(SLIDER_SIZE);
     prioritySlider.setPreferredSize(SLIDER_PREFERRED_SIZE);
     prioritySlider.setVisible(false);
+    priorityLv = prioritySlider.getValue();
 
     checkbox.addItemListener(this);
     prioritySlider.addChangeListener(this);
@@ -125,6 +126,8 @@ public class BoxTextArea extends JPanel
     JSlider source = (JSlider) e.getSource();
     if (e.getSource() instanceof JSlider) {
       this.priorityLv = source.getValue();
+      System.out.println("Changing priority");
+      System.out.println(priorityLv);
     }
     
   }
