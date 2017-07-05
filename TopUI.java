@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -40,7 +41,8 @@ public class TopUI implements ActionListener {
   private JButton addButtonLeft, removeButtonLeft, selectButtonLeft,
       addButtonRight, removeButtonRight, selectButtonRight, addButtonMid,
       removeButtonMid, selectButtonMid;
-  private JMenu sortLeft,sortMid,sortRight;
+  private JButton sortLHighToLow, sortLLowToHigh, sortMHighToLow,
+      sortMLowToHigh, sortRHighToLow, sortRLowToHigh;
 
   // top ui constants for border and view port area
   private static final int BORDER_STROKE = 2;
@@ -62,6 +64,8 @@ public class TopUI implements ActionListener {
   private static final String ADD_PASTDUE = "add due boxField";
   private static final String REMOVE_PASTDUE = "remove due boxField";
   private static final String SELECT_DUES = "select all dues";
+  private static final String HIGH_LOW = "SORT HIGH TO LOW";
+  private static final String LOW_HIGH = "SORT LOW TO HIGH";
   
   /**
    * Ctor for connecting TOP UI with mainframe
@@ -105,7 +109,8 @@ public class TopUI implements ActionListener {
     removeButtonLeft.setActionCommand(REMOVE_GOAL);
     selectButtonLeft = new JButton("Select All");
     selectButtonLeft.setActionCommand(SELECT_GOALS);
-    sortLeft = new JMenu("SORT");
+    sortLHighToLow = new JButton("Sort: ^");
+    sortLLowToHigh = new JButton("Sort: v");
     
     /*------------------------TASKS---------------------------*/
     taskBar = new JToolBar();
@@ -115,7 +120,8 @@ public class TopUI implements ActionListener {
     removeButtonMid.setActionCommand(REMOVE_TASK);
     selectButtonMid = new JButton("Select All");
     selectButtonMid.setActionCommand(SELECT_TASKS);
-    sortMid = new JMenu("SORT");
+    sortMHighToLow = new JButton("Sort: ^");
+    sortMLowToHigh = new JButton("Sort: v");
     
     /*------------------------PAST DUES----------------------*/
     dueBar = new JToolBar();
@@ -125,7 +131,8 @@ public class TopUI implements ActionListener {
     removeButtonRight.setActionCommand(REMOVE_PASTDUE);
     selectButtonRight = new JButton("Select All");
     selectButtonRight.setActionCommand(SELECT_DUES);
-    sortRight = new JMenu("SORT");
+    sortRHighToLow = new JButton("Sort: ^");
+    sortRLowToHigh = new JButton("Sort: v");
     
     // add this UI as listener to the buttons.
     addButtonLeft.addActionListener(this);
@@ -138,6 +145,22 @@ public class TopUI implements ActionListener {
     selectButtonMid.addActionListener(this);
     selectButtonRight.addActionListener(this);
     
+    // sort button event handling
+    sortLHighToLow.addActionListener(new SortGoals());
+    sortLHighToLow.setActionCommand(HIGH_LOW);
+    sortLLowToHigh.addActionListener(new SortGoals());
+    sortLLowToHigh.setActionCommand(LOW_HIGH);
+
+    sortRHighToLow.addActionListener(new SortDues());
+    sortRHighToLow.setActionCommand(HIGH_LOW);
+    sortRLowToHigh.addActionListener(new SortDues());
+    sortRLowToHigh.setActionCommand(LOW_HIGH);
+
+    sortMHighToLow.addActionListener(new SortTasks());
+    sortMHighToLow.setActionCommand(HIGH_LOW);
+    sortMLowToHigh.addActionListener(new SortTasks());
+    sortMLowToHigh.setActionCommand(LOW_HIGH);
+
     // labels for panels and the corresponding text fields
     shortGoals = new JLabel("  Today's Goals: ");
     tasks = new JLabel("  Daily Tasks: ");
@@ -175,11 +198,11 @@ public class TopUI implements ActionListener {
     
     // add toolbars to each panel
     container.addToolBars(topLPanel, addButtonLeft, removeButtonLeft,
-        selectButtonLeft, sortLeft, goalBar);
+        selectButtonLeft, sortLHighToLow, sortLLowToHigh, goalBar);
     container.addToolBars(topMPanel, addButtonMid, removeButtonMid,
-        selectButtonMid, sortMid, taskBar);
+        selectButtonMid, sortMHighToLow, sortMLowToHigh, taskBar);
     container.addToolBars(topRPanel, addButtonRight, removeButtonRight,
-        selectButtonRight, sortRight, dueBar);
+        selectButtonRight, sortRHighToLow, sortRLowToHigh, dueBar);
     
     // add components to top panels
     topLPanel.add(shortGoals,BorderLayout.NORTH);
@@ -227,57 +250,71 @@ public class TopUI implements ActionListener {
     /*----------------------ADDING--------------------------*/
 
     if (e.getActionCommand().equals(ADD_GOAL)) {
-
       addBoxTextArea(goalField);
-
     }
 
     if (e.getActionCommand().equals(ADD_TASK)) {
-
       addBoxTextArea(taskField);
-
     }
-
     if (e.getActionCommand().equals(ADD_PASTDUE)) {
-
       addBoxTextArea(pastDueField);
-
     }
 
     /*-----------------------REMOVING----------------------*/
 
     if (e.getActionCommand().equals(REMOVE_GOAL)) {
-
       removeBoxTextArea(goalField);
     }
 
     if (e.getActionCommand().equals(REMOVE_TASK)) {
-
       removeBoxTextArea(taskField);
-
     }
 
     if (e.getActionCommand().equals(REMOVE_PASTDUE)) {
-
       removeBoxTextArea(pastDueField);
-
     }
 
     /*-----------------------SELECTING----------------------*/
 
     if (e.getActionCommand().equals(SELECT_GOALS)) {
-
       selectAllBox(goalField);
     }
 
     if (e.getActionCommand().equals(SELECT_TASKS)) {
-
       selectAllBox(taskField);
     }
 
     if (e.getActionCommand().equals(SELECT_DUES)) {
-
       selectAllBox(pastDueField);
+    }
+
+  }
+
+  /*-------------------PRIVATE CLASS SORT BUTTON HANDLING-----------------*/
+
+  private class SortGoals implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      sortBox(e, goalField);
+    }
+
+  }
+
+  private class SortTasks implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      sortBox(e, taskField);
+    }
+
+  }
+
+  private class SortDues implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      sortBox(e, pastDueField);
     }
 
   }
@@ -314,4 +351,17 @@ public class TopUI implements ActionListener {
     }
 
   }
+
+  private void sortBox(ActionEvent e, JPanel targetPanel) {
+
+    if (e.getActionCommand() == HIGH_LOW) {
+      Arrays.sort(targetPanel.getComponents(), new BoxComparator());
+    } else if (e.getActionCommand() == LOW_HIGH) {
+      Arrays.sort(targetPanel.getComponents(), new BoxReverseComparator());
+    }
+
+    targetPanel.revalidate();
+    targetPanel.repaint();
+  }
+
 }
