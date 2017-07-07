@@ -45,11 +45,28 @@ public class BoxTextArea extends JPanel
   private static final int FIELD_ROW = 4;
   private static final int MAX_PRIORITY = 10;
   private static final int MIN_PRIORITY = 1;
-  private static final Color PANEL_COLOR = new Color(51, 133, 255);
-  private static final Color BOX_COLOR = new Color(255, 255, 55);
   private static final Dimension SLIDER_SIZE = new Dimension(300, 15);
   private static final Dimension SLIDER_PREFERRED_SIZE = new Dimension(300, 35);
 
+  // color that corresponds to priority
+  private static final Color PANEL_COLOR = new Color(51, 133, 255);
+
+  // default priority 4-7 Box color (YELLOW) Caution
+  private static final Color BOX_COLOR = new Color(255, 255, 55);
+  private static final int CAUTION_THRESHOLD_LOW = 4;
+  private static final int CAUTION_THRESHOLD_HIGH = 7;
+  // low priority 1-3 Box color (Green) Safe
+  private static final Color SAFE_COLOR = new Color(54, 237, 88);
+  // high priority 8-10 Box color (Red) Danger
+  private static final Color HIGH_PRIORITY_COLOR = new Color(239, 19, 19);
+
+  /**
+   * Ctor for initializing a BoxTextArea object and responsible for adding
+   * listeners and initializing appearance
+   * 
+   * @param mainPanel:
+   *          the panel to add this object to
+   */
   public BoxTextArea(JPanel mainPanel) {
 
     // instantiate components for a checkbox and corresponding text area
@@ -78,6 +95,7 @@ public class BoxTextArea extends JPanel
     prioritySlider.setSize(SLIDER_SIZE);
     prioritySlider.setPreferredSize(SLIDER_PREFERRED_SIZE);
     prioritySlider.setVisible(false);
+    prioritySlider.setSnapToTicks(true);
     priorityLv = prioritySlider.getValue();
 
     checkbox.addItemListener(this);
@@ -97,20 +115,19 @@ public class BoxTextArea extends JPanel
   @Override
   public void itemStateChanged(ItemEvent e) {
 
+    // slider is only available for adjustment when box is selected
     if (e.getStateChange() == ItemEvent.SELECTED) {
 
       this.selected = true;
       this.prioritySlider.setVisible(true);
       this.prioritySlider.setEnabled(true);
-      editable.setEditable(true);
-      System.out.println("CAN EDIT");
+
     } else {
       
       this.selected = false;
       this.prioritySlider.setVisible(false);
       this.prioritySlider.setEnabled(false);
-      editable.setEditable(false);
-      System.out.println("CAN'T EDIT");
+
     }
 
   }
@@ -124,10 +141,22 @@ public class BoxTextArea extends JPanel
   public void stateChanged(ChangeEvent e) {
 
     JSlider source = (JSlider) e.getSource();
+    // check if it is the JSlider that is has changed
     if (e.getSource() instanceof JSlider) {
       this.priorityLv = source.getValue();
-      System.out.println("Changing priority");
-      System.out.println(priorityLv);
+
+      // low priority color
+      if (priorityLv < CAUTION_THRESHOLD_LOW) {
+        editable.setBackground(SAFE_COLOR);
+      }
+      // high priority color
+      else if (priorityLv > CAUTION_THRESHOLD_HIGH) {
+        editable.setBackground(HIGH_PRIORITY_COLOR);
+      }
+      // default priority color
+      else {
+        editable.setBackground(BOX_COLOR);
+      }
     }
     
   }
@@ -152,6 +181,9 @@ public class BoxTextArea extends JPanel
 
   /**
    * Set the selected status of the boxTextArea (toggle effect)
+   * 
+   * @param select:
+   *          the selection status to be set
    */
   public void setSelected(boolean select) {
     this.selected = select;
