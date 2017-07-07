@@ -22,7 +22,7 @@ import javax.swing.JToolBar;
  * @since 2017-03-30
  */
 
-// TODO need to implement actionListener for button action
+
 public class Mercurial extends JFrame{
 
   // default frame status
@@ -48,20 +48,14 @@ public class Mercurial extends JFrame{
     this.setVisible(true);
   }
   
-  /**
-   * TODO add toolbars for check box functionality
-   * Set up the top panel user interface
-   */
+
   private void setTopUI(){
     
     TopUI topUI = new TopUI(this);
     
   }
   
-  /**
-   * TODO toolbar for check box functionality and productivity gauge
-   * set up the left user interface
-   */
+
   private void setLeftUI(){
     
     LeftUI leftUI = new LeftUI(this);

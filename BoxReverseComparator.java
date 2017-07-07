@@ -13,7 +13,9 @@ public class BoxReverseComparator implements Comparator {
 
   /**
    * compare two BoxTextArea object base on priority level higher priority level
-   * should go first
+   * should go first sort all the boxes; selected boxes comes before deselected
+   * boxes, If two boxes shares the same selection status, the will be compared
+   * base on the following rule
    * 
    * @param o1:
    *          the first BoxTextArea
@@ -24,15 +26,29 @@ public class BoxReverseComparator implements Comparator {
   @Override
   public int compare(Object o1, Object o2) {
 
-    if (((BoxTextArea) o1).getPriorityLv() > ((BoxTextArea) o2)
-        .getPriorityLv()) {
-      return 1;
-    } else if (((BoxTextArea) o1).getPriorityLv() < ((BoxTextArea) o2)
-        .getPriorityLv()) {
+    if (((BoxTextArea) o1).isSelected() == ((BoxTextArea) o2).isSelected()) {
+      // higher priority will be lower in the list
+      if (((BoxTextArea) o1).getPriorityLv() > ((BoxTextArea) o2)
+          .getPriorityLv()) {
+        return 1;
+      }
+      // lower priority will be higher in the list
+      else if (((BoxTextArea) o1).getPriorityLv() < ((BoxTextArea) o2)
+          .getPriorityLv()) {
+        return -1;
+      }
+
+      // no change in positioning if two object have same priority
+      return 0;
+    }
+    // o1 selected, return -1 means it should be higher in the list
+    else if (((BoxTextArea) o1).isSelected() == true) {
       return -1;
     }
-
-    return 0;
+    // return 1, because o1 should be lower in the list (unselected)
+    else {
+      return 1;
+    }
   }
 
 }
