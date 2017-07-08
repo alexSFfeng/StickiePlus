@@ -13,10 +13,12 @@ import javax.swing.JPanel;
 public interface UI_Panel {
 
   /**
-   * set the selectionMode of containerPanel
+   * set the selectionMode of a panel that holds BoxTextArea objects
    * 
-   * @param containerPanel
-   * @param selectionMode
+   * @param containerPanel:
+   *          the panel that holds the BoxTextArea objects
+   * @param selectionMode:
+   *          the selection Mode to be set for this panel
    */
   public void setSelection(JPanel containerPanel, boolean selectionMode);
 

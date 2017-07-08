@@ -27,7 +27,7 @@ import javax.swing.border.EmptyBorder;
  * @since 2017-03-30
  *
  */
-public class TopUI implements ActionListener {
+public class TopUI implements ActionListener, UI_Panel {
 
   // top portion of the UI
   private JMenuBar menuBar;
@@ -284,14 +284,17 @@ public class TopUI implements ActionListener {
 
     if (e.getActionCommand().equals(SELECT_GOALS)) {
       selectAllBox(goalField, selectAllGoals = !selectAllGoals);
+      setSelection(goalField, selectAllGoals);
     }
 
     if (e.getActionCommand().equals(SELECT_TASKS)) {
       selectAllBox(taskField, selectAllTasks = !selectAllTasks);
+      setSelection(taskField, selectAllTasks);
     }
 
     if (e.getActionCommand().equals(SELECT_DUES)) {
       selectAllBox(pastDueField, selectAllDues = !selectAllDues);
+      setSelection(pastDueField, selectAllDues);
     }
 
   }
@@ -377,6 +380,20 @@ public class TopUI implements ActionListener {
 
     }
 
+    // set selection button back to select all = false if there are no boxes
+    // left
+    if (targetPanel.getComponentCount() == 0) {
+
+      if (targetPanel == goalField) {
+        toggleSelectButton(selectButtonLeft, selectAllGoals = false);
+      } else if (targetPanel == taskField) {
+        toggleSelectButton(selectButtonMid, selectAllTasks = false);
+      } else {
+        toggleSelectButton(selectButtonRight, selectAllDues = false);
+      }
+
+    }
+
     // since last validate doesn't not show real time visual update, needs
     // repaint
     targetPanel.repaint();
@@ -396,6 +413,7 @@ public class TopUI implements ActionListener {
     for (int i = 0; i < targetPanel.getComponentCount(); i++) {
       ((BoxTextArea) (targetPanel.getComponent(i))).setSelected(selectStatus);
     }
+
 
   }
 
@@ -432,6 +450,65 @@ public class TopUI implements ActionListener {
 
     targetPanel.revalidate();
     targetPanel.repaint();
+
+  }
+
+  @Override
+  public void setSelection(JPanel containerPanel, boolean selectionMode) {
+
+    if (containerPanel.getComponentCount() > 0) {
+
+      if (containerPanel == goalField) {
+        selectAllGoals = selectionMode;
+        toggleSelectButton(selectButtonLeft, selectionMode);
+      } else if (containerPanel == taskField) {
+        selectAllTasks = selectionMode;
+        toggleSelectButton(selectButtonMid, selectionMode);
+      } else {
+        selectAllDues = selectionMode;
+        toggleSelectButton(selectButtonRight, selectionMode);
+      }
+
+    }
+  }
+
+  /**
+   * return the selection mode of the target panel
+   * 
+   * @param containerPanel:
+   *          the panel that contains BoxTextArea objects
+   * @return a boolean that tells the select button status of the specified
+   *         panel
+   */
+  @Override
+  public boolean getSelection(JPanel containerPanel) {
+
+    if (containerPanel == goalField) {
+      return selectAllGoals;
+    } else if (containerPanel == taskField) {
+      return selectAllTasks;
+    } else {
+      return selectAllDues;
+    }
+
+  }
+
+  /**
+   * Toggles the text display for the select All button (select all or deselect
+   * all)
+   * 
+   * @param targetButton:
+   *          the button to change text
+   * @param selectionMode:
+   *          the selection mode that determines the text
+   */
+  private void toggleSelectButton(JButton targetButton, boolean selectionMode) {
+
+    if (selectionMode) {
+      targetButton.setText("Deselect All");
+    } else {
+      targetButton.setText("Select All");
+    }
 
   }
 

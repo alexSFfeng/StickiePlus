@@ -24,7 +24,7 @@ import javax.swing.border.EmptyBorder;
  * @since 2017-04-10
  *
  */
-public class LeftUI {
+public class LeftUI implements UI_Panel {
 
   // left portion of the UI
   private JPanel leftPanel,leftPanelTop,leftPanelBot,leftPanelBotTop;
@@ -155,6 +155,11 @@ public class LeftUI {
 
       }
 
+      // no component left; select all boolean becomes false;
+      if (leftPanelBotTop.getComponentCount() == 0) {
+        selectButton.setText("Select All");
+        selectedAll = false;
+      }
       // since last validate doesn't not show real time visual update, needs
       // repaint
       leftPanelBotTop.repaint();
@@ -190,6 +195,8 @@ public class LeftUI {
         ((BoxTextArea) (leftPanelBotTop.getComponent(i)))
             .setSelected(selectedAll);
       }
+
+      setSelection(leftPanelBotTop, selectedAll);
     }
   }
 
@@ -286,7 +293,33 @@ public class LeftUI {
    * @param selectAllMode:
    *          the selection mode to be set
    */
-  public void setSelection(boolean selectAllMode) {
-    selectedAll = selectAllMode;
+  public void setSelection(JPanel containerPanel, boolean selectAllMode) {
+
+    if (containerPanel.getComponentCount() > 0) {
+
+      selectedAll = selectAllMode;
+
+      if (selectedAll) {
+        selectButton.setText("Deselect All");
+      } else {
+        selectButton.setText("Select All");
+      }
+
+    }
+
+  }
+
+  /**
+   * receive the current selection mode of a panel that holds BoxTextArea
+   * 
+   * @param containerPanel:
+   *          the panel that holds BoxTextArea objects
+   * @return the selection mode of that panel
+   */
+  @Override
+  public boolean getSelection(JPanel containerPanel) {
+
+    return selectedAll;
+
   }
 }
