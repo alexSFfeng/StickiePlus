@@ -120,7 +120,7 @@ public class LeftUI implements UI_Panel {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-      new BoxTextArea(leftPanelBotTop);
+      new BoxTextArea(leftPanelBotTop, LeftUI.this);
       leftPanelBotTop.revalidate();
     }
   }

@@ -33,6 +33,9 @@ public class BoxTextArea extends JPanel
   private JScrollPane boxAreaPane;
   private JSlider prioritySlider;
   
+  // the UI_Panel that this BoxTextArea object belongs to
+  private UI_Panel refPanel;
+
   // determines whether or not this box is selected
   private boolean selected;
   // the priority level of this task
@@ -67,7 +70,7 @@ public class BoxTextArea extends JPanel
    * @param mainPanel:
    *          the panel to add this object to
    */
-  public BoxTextArea(JPanel mainPanel) {
+  public BoxTextArea(JPanel mainPanel, UI_Panel containerUI) {
 
     // instantiate components for a checkbox and corresponding text area
     this.setLayout(new BorderLayout());
@@ -103,6 +106,9 @@ public class BoxTextArea extends JPanel
 
     this.setBackground(PANEL_COLOR);
     editable.setBackground(BOX_COLOR);
+
+    // store the reference to the UI_Panel that contains this object
+    refPanel = containerUI;
 
     mainPanel.add(this);
   }

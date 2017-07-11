@@ -357,7 +357,7 @@ public class TopUI implements ActionListener, UI_Panel {
    */
   private void addBoxTextArea(JPanel targetPanel) {
 
-    new BoxTextArea(targetPanel);
+    new BoxTextArea(targetPanel, this);
     targetPanel.revalidate();
 
   }
