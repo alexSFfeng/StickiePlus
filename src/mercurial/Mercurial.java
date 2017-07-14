@@ -13,6 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
+import calendarFunctions.MainCalendar;
+
 /**
  * Application for self Organization, scheduling, goals,
  * planning, and internship finding. (Keep track of productivity)
@@ -43,12 +45,15 @@ public class Mercurial extends JFrame{
     this.getContentPane().setBackground(Color.DARK_GRAY);
     this.setTopUI();
     this.setLeftUI();
+    this.setCalendar();
     this.validate();
     
     this.setVisible(true);
   }
   
-
+  /**
+   * Display and set up the upper UI
+   */
   private void setTopUI(){
     
     TopUI topUI = new TopUI(this);
@@ -56,12 +61,24 @@ public class Mercurial extends JFrame{
   }
   
 
+  /**
+   * Display and set up the left UI
+   */
   private void setLeftUI(){
     
     LeftUI leftUI = new LeftUI(this);
     
   }
   
+  /**
+   * Display and set up the Main calendar
+   */
+  private void setCalendar() {
+
+    MainCalendar mainCal = new MainCalendar(this);
+
+  }
+
   /**
    * add a toolbar to a Jpanel (such toolbar is for add/remove tasks)
    * 

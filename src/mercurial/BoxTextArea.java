@@ -3,19 +3,20 @@ package mercurial;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Date;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import calendarFunctions.JDatePicker;
 
 /**
  * check boxes that holds goal, task, and pastDue informations
@@ -28,15 +29,19 @@ import javax.swing.event.ChangeListener;
  *
  */
 public class BoxTextArea extends JPanel
-    implements ItemListener, ChangeListener, ActionListener {
+    implements ItemListener, ChangeListener {
 
   // components of a boxTextArea
   private JTextArea editable;
   private JCheckBox checkbox;
   private JScrollPane boxAreaPane;
   private JSlider prioritySlider;
-  private JButton dueDateButton;
   
+  // due date component group
+  private JPanel duePanel;
+  private JLabel dueSign;
+  private JDatePicker dueDatePicker;
+
   // the UI_Panel that this BoxTextArea object belongs to
   private UI_Panel refPanel;
 
@@ -55,8 +60,8 @@ public class BoxTextArea extends JPanel
   private static final Dimension SLIDER_SIZE = new Dimension(300, 15);
   private static final Dimension SLIDER_PREFERRED_SIZE = new Dimension(300, 35);
 
-  // color that corresponds to priority
-  private static final Color PANEL_COLOR = new Color(51, 133, 255);
+  // box color background
+  private static final Color PANEL_COLOR = Color.GRAY;
 
   // default priority 4-7 Box color (YELLOW) Caution
   private static final Color BOX_COLOR = new Color(255, 255, 55);
@@ -83,17 +88,25 @@ public class BoxTextArea extends JPanel
     editable = new JTextArea(FIELD_ROW, FIELD_COL);
     checkbox = new JCheckBox();
     boxAreaPane = new JScrollPane(editable);
-    dueDateButton = new JButton("Due on: click to change");
     prioritySlider = new JSlider(MIN_PRIORITY, MAX_PRIORITY);
 
+    // due date component initialization
+    dueDatePicker = new JDatePicker();
+    dueSign = new JLabel("Due on");
+    duePanel = new JPanel(new BorderLayout());
+
     // button appearance
-    dueDateButton.setBackground(Color.GRAY);
-    dueDateButton.setVisible(false);
+    duePanel.setBackground(Color.GRAY);
+    dueDatePicker.setBackground(Color.GRAY);
+
+    // putting together due component group
+    duePanel.add(dueSign, BorderLayout.WEST);
+    duePanel.add(dueDatePicker);
 
     // adding check box and text area to the panel
     this.add(checkbox, BorderLayout.WEST);
     this.add(prioritySlider, BorderLayout.SOUTH);
-    this.add(dueDateButton, BorderLayout.NORTH);
+    this.add(duePanel, BorderLayout.NORTH);
     this.add(boxAreaPane);
 
     // the wrap around functionality of the text area
@@ -114,7 +127,6 @@ public class BoxTextArea extends JPanel
     // event handling listener
     checkbox.addItemListener(this);
     prioritySlider.addChangeListener(this);
-    dueDateButton.addActionListener(this);
 
     this.setBackground(PANEL_COLOR);
     editable.setBackground(BOX_COLOR);
@@ -139,14 +151,12 @@ public class BoxTextArea extends JPanel
       this.selected = true;
       this.prioritySlider.setVisible(true);
       this.prioritySlider.setEnabled(true);
-      this.dueDateButton.setVisible(true);
 
     } else {
       
       this.selected = false;
       this.prioritySlider.setVisible(false);
       this.prioritySlider.setEnabled(false);
-      this.dueDateButton.setVisible(false);
 
     }
 
@@ -210,10 +220,14 @@ public class BoxTextArea extends JPanel
     checkbox.setSelected(select);
   }
 
-  @Override
-  public void actionPerformed(ActionEvent e) {
-    // TODO Auto-generated method stub
+  /**
+   * Get the date selected by the user
+   * 
+   * @return the Date object that holds the due date selected
+   */
+  public Date getDate() {
+
+    return dueDatePicker.getDate();
 
   }
-
 }
