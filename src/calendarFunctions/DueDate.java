@@ -1,4 +1,4 @@
-package mercurial;
+package calendarFunctions;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
