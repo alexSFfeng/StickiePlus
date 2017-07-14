@@ -94,6 +94,7 @@ public class BoxTextArea extends JPanel
     dueDatePicker = new JDatePicker();
     dueSign = new JLabel("Due on");
     duePanel = new JPanel(new BorderLayout());
+    dueDatePicker.setDate(new Date());
 
     // button appearance
     duePanel.setBackground(Color.GRAY);

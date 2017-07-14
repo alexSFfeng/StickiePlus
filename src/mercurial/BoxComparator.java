@@ -13,10 +13,11 @@ import java.util.Comparator;
 public class BoxComparator implements Comparator {
 
   /**
-   * compare two BoxTextArea object base on priority level higher priority level
-   * should go first; selected boxes comes before deselected boxes, If two boxes
-   * shares the same selection status, the will be compared base on the
-   * following rule
+   * First compare the two object base on their deadlines (closer should come
+   * first) compare two BoxTextArea object base on priority level higher
+   * priority level should go first; selected boxes comes before deselected
+   * boxes, If two boxes shares the same selection status, the will be compared
+   * base on the following rule
    * 
    * @param o1:
    *          the first BoxTextArea
@@ -29,16 +30,28 @@ public class BoxComparator implements Comparator {
 
     // proceed to priority check if both boxes share same status
     if (((BoxTextArea) o1).isSelected() == ((BoxTextArea) o2).isSelected()) {
-      // lower priority will return 1, result in lower in the list
-      if (((BoxTextArea) o1).getPriorityLv() < ((BoxTextArea) o2)
-          .getPriorityLv()) {
+
+      /*-----------CLOSER DEADLINE COMES FIRST REGARDLESS OF PRIORITY---*/
+
+      if (((BoxTextArea) o1).getDate().after(((BoxTextArea) o2).getDate())) {
         return 1;
+      } else if (((BoxTextArea) o1).getDate()
+          .before(((BoxTextArea) o2).getDate())) {
+        return -1;
       }
-      // higher priority will return -1, result in higer in the list
-      else if (((BoxTextArea) o1).getPriorityLv() > ((BoxTextArea) o2)
-        .getPriorityLv()) {
-      return -1;
-    }
+      // same deadline, check priority
+      else {
+        // lower priority will return 1, result in lower in the list
+        if (((BoxTextArea) o1).getPriorityLv() < ((BoxTextArea) o2)
+            .getPriorityLv()) {
+          return 1;
+        }
+        // higher priority will return -1, result in higer in the list
+        else if (((BoxTextArea) o1).getPriorityLv() > ((BoxTextArea) o2)
+          .getPriorityLv()) {
+          return -1;
+        }
+      }
 
     return 0;
     }
