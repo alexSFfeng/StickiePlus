@@ -3,9 +3,12 @@ package mercurial;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -25,13 +28,14 @@ import javax.swing.event.ChangeListener;
  *
  */
 public class BoxTextArea extends JPanel
-    implements ItemListener, ChangeListener {
+    implements ItemListener, ChangeListener, ActionListener {
 
   // components of a boxTextArea
   private JTextArea editable;
   private JCheckBox checkbox;
   private JScrollPane boxAreaPane;
   private JSlider prioritySlider;
+  private JButton dueDateButton;
   
   // the UI_Panel that this BoxTextArea object belongs to
   private UI_Panel refPanel;
@@ -43,7 +47,7 @@ public class BoxTextArea extends JPanel
 
   // appearance constants
   private static final int SLOT_WIDTH = 200;
-  private static final int SLOT_HEIGHT = 100;
+  private static final int SLOT_HEIGHT = 150;
   private static final int FIELD_COL = 22;
   private static final int FIELD_ROW = 4;
   private static final int MAX_PRIORITY = 10;
@@ -79,11 +83,17 @@ public class BoxTextArea extends JPanel
     editable = new JTextArea(FIELD_ROW, FIELD_COL);
     checkbox = new JCheckBox();
     boxAreaPane = new JScrollPane(editable);
+    dueDateButton = new JButton("Due on: click to change");
     prioritySlider = new JSlider(MIN_PRIORITY, MAX_PRIORITY);
+
+    // button appearance
+    dueDateButton.setBackground(Color.GRAY);
+    dueDateButton.setVisible(false);
 
     // adding check box and text area to the panel
     this.add(checkbox, BorderLayout.WEST);
     this.add(prioritySlider, BorderLayout.SOUTH);
+    this.add(dueDateButton, BorderLayout.NORTH);
     this.add(boxAreaPane);
 
     // the wrap around functionality of the text area
@@ -101,8 +111,10 @@ public class BoxTextArea extends JPanel
     prioritySlider.setSnapToTicks(true);
     priorityLv = prioritySlider.getValue();
 
+    // event handling listener
     checkbox.addItemListener(this);
     prioritySlider.addChangeListener(this);
+    dueDateButton.addActionListener(this);
 
     this.setBackground(PANEL_COLOR);
     editable.setBackground(BOX_COLOR);
@@ -127,12 +139,14 @@ public class BoxTextArea extends JPanel
       this.selected = true;
       this.prioritySlider.setVisible(true);
       this.prioritySlider.setEnabled(true);
+      this.dueDateButton.setVisible(true);
 
     } else {
       
       this.selected = false;
       this.prioritySlider.setVisible(false);
       this.prioritySlider.setEnabled(false);
+      this.dueDateButton.setVisible(false);
 
     }
 
@@ -194,6 +208,12 @@ public class BoxTextArea extends JPanel
   public void setSelected(boolean select) {
     this.selected = select;
     checkbox.setSelected(select);
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    // TODO Auto-generated method stub
+
   }
 
 }
