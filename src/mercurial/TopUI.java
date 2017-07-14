@@ -50,6 +50,10 @@ public class TopUI implements ActionListener, UI_Panel {
   private static final int FIELD_COL = 100;
   private static final int FIELD_ROW = 4;
 
+  // appearance constants
+  private static final int SLOT_WIDTH = 200;
+  private static final int SLOT_HEIGHT = 200;
+
   // padding between each task box
   private static final int BORDER_PADDING = 10;
   private static final int BOX_PADDING = 30;
@@ -104,7 +108,6 @@ public class TopUI implements ActionListener, UI_Panel {
     topLPanel = new JPanel(new BorderLayout());
     topMPanel = new JPanel(new BorderLayout());
     topRPanel = new JPanel(new BorderLayout());
-
 
     // instantiating JButtons and JToolBars
 
@@ -191,9 +194,10 @@ public class TopUI implements ActionListener, UI_Panel {
     duePane = new JScrollPane(pastDueField);
 
     /*------------------- Panel fixed size---------------------------*/
-    goalPane.setPreferredSize(new Dimension(FIELD_ROW, FIELD_COL));
-    taskPane.setPreferredSize(new Dimension(FIELD_ROW, FIELD_COL));
-    duePane.setPreferredSize(new Dimension(FIELD_ROW, FIELD_COL));
+    topLPanel.setPreferredSize(new Dimension(SLOT_WIDTH, SLOT_HEIGHT));
+    topRPanel.setPreferredSize(new Dimension(SLOT_WIDTH, SLOT_HEIGHT));
+    topMPanel.setPreferredSize(new Dimension(SLOT_WIDTH, SLOT_HEIGHT));
+
 
     /*------------------ set up the border for top ui scroll panes-----------*/
     goalPane
@@ -357,7 +361,7 @@ public class TopUI implements ActionListener, UI_Panel {
    */
   private void addBoxTextArea(JPanel targetPanel) {
 
-    new BoxTextArea(targetPanel);
+    new BoxTextArea(targetPanel, this);
     targetPanel.revalidate();
 
   }
