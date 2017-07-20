@@ -12,6 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import calendarFunctions.MainCalendar;
 
@@ -48,6 +50,15 @@ public class Mercurial extends JFrame{
     this.setCalendar();
     this.validate();
     
+    // try to match system look and feel ui
+    try {
+      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    } catch (ClassNotFoundException e) {
+    } catch (InstantiationException e) {
+    } catch (IllegalAccessException e) {
+    } catch (UnsupportedLookAndFeelException e) {
+    }
+
     this.setVisible(true);
   }
   
