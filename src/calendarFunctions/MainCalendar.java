@@ -11,13 +11,22 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableModel;
 
 
 /**
- * The main calendar window builder tool
+ * The main calendar window that displays a calendar that could go +/- 10 years
+ * away from current date
  * 
+ * Source of help:
+ * http://www.dreamincode.net/forums/topic/25042-creating-a-calendar-viewer-application/
  * 
- * @author Xelafe
+ * @author Shanfeng Feng
+ * @version 0.1
+ * @since 2017-07-10
  *
  */
 public class MainCalendar extends JPanel {
@@ -26,7 +35,7 @@ public class MainCalendar extends JPanel {
   private JPanel topContainel, topYearPanel, topMonthPanel, monthSubPanel,
       yearSubPanel;
   private JButton nextYearButton, prevYearButton, nextMonButton, prevMonButton,
-      yearButton, monthButton;
+      yearButton, monthButton, today;
 
   // appearance constants
   private static final int PANEL_WIDTH = 200;
@@ -44,21 +53,28 @@ public class MainCalendar extends JPanel {
   private static final int YEAR_HEIGHT = 55;
 
   // Calendar constant strings
-  private static final String[] DAYS_OF_WEEK = { "MON", "TUE", "WED", "THU",
-      "FRI", "SAT", "SUN" };
+  private static final String[] DAYS_OF_WEEK = { "SUN", "MON", "TUE", "WED",
+      "THU", "FRI", "SAT" };
   private static final String[] MONS_OF_YEAR = { "January", "February", "March",
       "April", "May", "June", "July", "August", "September", "November",
       "December" };
 
-  // bot panel component
-  private JButton today;
+  // main grid ( a table of the days displayed in the scrollpane)
+  private DefaultTableModel tableModel;
+  private JTable calendarTable;
+  private JScrollPane daysPane;
 
-  // main grid panel
-  private JPanel daysPanel;
-
+  // the build in calendar being used
   private Calendar currentCal;
+  private int currentYear, currentMonth, currentDay;
+
+  private static final int NUM_ROWS = 6;
+  private static final int NUM_COLS = 7;
+  private static final int ROW_HEIGHT = 65;
 
   private static final Color CALENDAR_COLOR = new Color(100, 100, 100);
+  private static final int YEAR_LIMIT = 10;
+  private static final int CALENDAR_OFFSET = 2;
   
   /**
    * add the main calendar to the main frame
@@ -71,6 +87,9 @@ public class MainCalendar extends JPanel {
 
     // initialize the calendar for local time and date
     currentCal = Calendar.getInstance();
+    currentYear = currentCal.get(Calendar.YEAR);
+    currentMonth = currentCal.get(Calendar.MONTH);
+    currentDay = currentCal.get(Calendar.DAY_OF_MONTH);
 
     /*--------- setting up the top layout for year and month GUI-----------------*/
     this.setLayout(new BorderLayout());
@@ -88,7 +107,7 @@ public class MainCalendar extends JPanel {
     nextYearButton.setFont(new Font("Marker Felt", Font.BOLD, NXT_PRV_FONT));
     prevYearButton = new JButton("<<");
     prevYearButton.setFont(new Font("Marker Felt", Font.BOLD, NXT_PRV_FONT));
-    yearButton = new JButton("Year: " + currentCal.get(Calendar.YEAR));
+    yearButton = new JButton("Year: " + currentYear);
     yearButton.setFont(new Font("Marker Felt", Font.BOLD, YEAR_FONT));
     yearButton.setPreferredSize(new Dimension(YEAR_WIDTH, YEAR_HEIGHT));
 
@@ -113,12 +132,13 @@ public class MainCalendar extends JPanel {
     nextMonButton.setFont(new Font("Marker Felt", Font.BOLD, NXT_PRV_FONT));
     prevMonButton = new JButton("<");
     prevMonButton.setFont(new Font("Marker Felt", Font.BOLD, NXT_PRV_FONT));
-    monthButton = new JButton(MONS_OF_YEAR[currentCal.get(Calendar.MONTH)]);
+    monthButton = new JButton(MONS_OF_YEAR[currentMonth]);
     monthButton.setFont(new Font("Marker Felt", Font.BOLD, MON_FONT));
     monthButton.setPreferredSize(new Dimension(MON_WIDTH, MON_HEIGHT));
     today = new JButton("Today");
     today.setFont(new Font("Marker Felt", Font.ITALIC, 29));
     today.setPreferredSize(new Dimension(BUTTON_PADDING, MON_HEIGHT));
+    today.setForeground(Color.yellow);
 
     // create rigid area
     monthSubPanel = new JPanel(new BorderLayout());
@@ -128,21 +148,112 @@ public class MainCalendar extends JPanel {
         BorderLayout.EAST);
     monthSubPanel.add(monthButton);
 
-    // adding the button to the year panel
+    // adding the button to the month panel
     topMonthPanel.add(prevMonButton, BorderLayout.WEST);
     topMonthPanel.add(nextMonButton, BorderLayout.EAST);
     topMonthPanel.add(monthSubPanel);
 
-    // adding the year and month panel together to the top
+    // adding the year and month panel together to the top panel
     topContainel.setPreferredSize(new Dimension(400, 90));
     topContainel.add(topMonthPanel, BorderLayout.SOUTH);
     topContainel.add(topYearPanel);
 
+    /*----------------------------Days part of the calendar----------*/
+    tableModel = new DefaultTableModel();
+    calendarTable = new JTable(tableModel);
+    daysPane = new JScrollPane(calendarTable);
+
+    // each column of the table is a day of the week
+    for (int i = 0; i < DAYS_OF_WEEK.length; i++) {
+      tableModel.addColumn(DAYS_OF_WEEK[i]);
+    }
+
+    // headers cannot be reordered or resized
+    calendarTable.getTableHeader().setResizingAllowed(false);
+    calendarTable.getTableHeader().setReorderingAllowed(false);
+
+    // set table selection mode
+    calendarTable.setColumnSelectionAllowed(true);
+    calendarTable.setRowSelectionAllowed(true);
+    calendarTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+    // table appearance
+    tableModel.setRowCount(NUM_ROWS);
+    tableModel.setColumnCount(NUM_COLS);
+    calendarTable.setRowHeight(ROW_HEIGHT);
+    calendarTable.setBackground(CALENDAR_COLOR);
+
+    // adding calendar components to the panel
     this.add(topContainel, BorderLayout.NORTH);
+    this.add(daysPane);
 
     this.setBackground(CALENDAR_COLOR);
+
+    refreshCalendar(currentMonth, currentYear);
     mainFrame.add(this);
 
   }
 
+  /**
+   * Helper method to refresh the calendar display when buttons were clicked
+   * 
+   * @param targetMonth
+   *          - the new month being moved to
+   * @param targetYear
+   *          - the new year being moved to
+   */
+  private void refreshCalendar(int targetMonth, int targetYear) {
+
+    /*-----------------------BUTTON ENABLE STATUS---------------------*/
+
+    // enable all the buttons first
+    nextYearButton.setEnabled(true);
+    prevYearButton.setEnabled(true);
+    nextMonButton.setEnabled(true);
+    prevMonButton.setEnabled(true);
+
+    // month or year too far back (lower bound)
+    if (targetMonth == 0 && targetYear <= targetYear - YEAR_LIMIT) {
+      prevYearButton.setEnabled(false);
+      prevMonButton.setEnabled(false);
+    } else if (targetYear <= targetYear - YEAR_LIMIT) {
+      prevYearButton.setEnabled(false);
+    }
+
+    // month or year too far ahead (upper bound)
+    if (targetMonth == Calendar.DECEMBER
+        && targetYear >= targetYear + YEAR_LIMIT) {
+      nextYearButton.setEnabled(false);
+      nextMonButton.setEnabled(false);
+    } else if (targetYear >= targetYear + YEAR_LIMIT) {
+      nextYearButton.setEnabled(false);
+    }
+
+    // update the year and task button text
+    yearButton.setText("Year " + targetYear);
+    monthButton.setText(MONS_OF_YEAR[targetMonth]);
+
+    /*-----------------------UPDATE THE CALENDAR DISPLAY--------------*/
+    Calendar tempCalendar = Calendar.getInstance();
+    tempCalendar.set(targetYear, targetMonth, 1);
+    int numOfDaysInMonth = tempCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+    int startOfMon = tempCalendar.get(Calendar.DAY_OF_WEEK);
+
+    // clean out the table first
+    for (int i = 0; i < NUM_ROWS; i++) {
+      for (int j = 0; j < NUM_COLS; j++) {
+        tableModel.setValueAt(null, i, j);
+      }
+    }
+
+    // TODO: change this into displaying a panel with shorthanded task
+    // descriptions
+    // print out the day of the month onto the calendar
+    for (int i = 1; i <= numOfDaysInMonth; i++) {
+      int row = (i + startOfMon - CALENDAR_OFFSET) / DAYS_OF_WEEK.length;
+      int column = (i + startOfMon - CALENDAR_OFFSET) % DAYS_OF_WEEK.length;
+      tableModel.setValueAt(i, row, column);
+    }
+
+  }
 }

@@ -93,6 +93,7 @@ public class BoxTextArea extends JPanel
     // due date component initialization
     dueDatePicker = new JDatePicker();
     dueSign = new JLabel("Due on");
+    dueSign.setForeground(Color.red);
     duePanel = new JPanel(new BorderLayout());
     dueDatePicker.setDate(new Date());
 
