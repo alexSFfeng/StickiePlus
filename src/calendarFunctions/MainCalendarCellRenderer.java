@@ -6,7 +6,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.util.Calendar;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -48,6 +47,7 @@ public class MainCalendarCellRenderer extends JPanel implements TableCellRendere
                                                  int row, int column){
     this.removeAll();
 
+    table.setAutoscrolls(true);
     // selection colors
     if (selected) {
       this.setBackground(table.getSelectionBackground());
@@ -72,11 +72,16 @@ public class MainCalendarCellRenderer extends JPanel implements TableCellRendere
       taskPanel = new JPanel();
       taskPanel.setLayout(new BoxLayout(taskPanel, BoxLayout.Y_AXIS));
       taskPanel.setBackground(this.getBackground());
+
+      for (int i = 0; i < 4; i++) {
+        taskPanel.add(new JLabel("Label" + i));
+      }
+
       this.add(dayLabel, BorderLayout.NORTH);
-      displayPane = new JScrollPane(taskPanel);
-      displayPane.setBackground(MainCalendar.CALENDAR_COLOR);
-      displayPane.setBorder(BorderFactory.createEmptyBorder());
-      this.add(displayPane);
+      // displayPane = new JScrollPane(taskPanel);
+      // displayPane.setBackground(MainCalendar.CALENDAR_COLOR);
+      // displayPane.setBorder(BorderFactory.createEmptyBorder());
+      this.add(taskPanel);
     }
     return this;
   }
@@ -87,14 +92,12 @@ public class MainCalendarCellRenderer extends JPanel implements TableCellRendere
     int realMonth = myCalendar.get(Calendar.MONTH);
     int realYear = myCalendar.get(Calendar.YEAR);
 
-    System.out.println("Day = " + realDay);
-    System.out.println("Month = " + realMonth);
     if (realDay == value
         && realMonth == newCalendar.get(Calendar.MONTH)
         && realYear == newCalendar.get(Calendar.YEAR)) {
 
-      this.setBackground(Color.RED);
-      taskPanel.setBackground(Color.RED);
+      this.setBackground(Color.ORANGE);
+      taskPanel.setBackground(Color.ORANGE);
     }
   }
 }

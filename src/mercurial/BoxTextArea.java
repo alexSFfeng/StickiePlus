@@ -232,4 +232,5 @@ public class BoxTextArea extends JPanel
     return dueDatePicker.getDate();
 
   }
+
 }

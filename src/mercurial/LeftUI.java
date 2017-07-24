@@ -322,4 +322,15 @@ public class LeftUI implements UI_Panel {
     return selectedAll;
 
   }
+
+  /**
+   * Return an array of all the tasks in the leftUI containerPanel
+   * 
+   * @return the array of assigned tasks
+   */
+  public BoxTextArea[] getAllTasks() {
+
+    return (BoxTextArea[]) leftPanelBotTop.getComponents();
+
+  }
 }

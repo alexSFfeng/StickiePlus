@@ -2,6 +2,7 @@ package calendarFunctions;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.Calendar;
@@ -139,7 +140,7 @@ public class MainCalendar extends JPanel {
     today = new JButton("Today");
     today.setFont(new Font("Marker Felt", Font.ITALIC, 29));
     today.setPreferredSize(new Dimension(BUTTON_PADDING, MON_HEIGHT));
-    today.setForeground(Color.RED);
+    today.setForeground(Color.ORANGE);
 
     // create rigid area
     monthSubPanel = new JPanel(new BorderLayout());
@@ -269,5 +270,18 @@ public class MainCalendar extends JPanel {
     calendarTable.setDefaultRenderer(calendarTable.getColumnClass(0),
         new MainCalendarCellRenderer(currentCal, tempCalendar,
             frameReference.getLeftUI()));
+
+    // ???? Update the row height base on the number of components in JPanel
+    for (int row = 0; row < calendarTable.getRowCount(); row++) {
+      int rowHeight = calendarTable.getRowHeight();
+
+      for (int column = 0; column < calendarTable.getColumnCount(); column++) {
+        Component comp = calendarTable.prepareRenderer(
+            calendarTable.getCellRenderer(row, column), row, column);
+        rowHeight = Math.max(rowHeight, comp.getPreferredSize().height);
+      }
+
+      calendarTable.setRowHeight(row, rowHeight);
+    }
   }
 }
