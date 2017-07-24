@@ -34,6 +34,8 @@ public class Mercurial extends JFrame{
   private static final int FRAME_WIDTH = 1000;
   private static final int FRAME_HEIGHT = 700;
   private static final int HEADER_FONT_SIZE = 16;
+  private TopUI topUI;
+  private LeftUI leftUI;
   
   /**
    * display the user interface
@@ -65,9 +67,9 @@ public class Mercurial extends JFrame{
   /**
    * Display and set up the upper UI
    */
-  private void setTopUI(){
+  public void setTopUI() {
     
-    TopUI topUI = new TopUI(this);
+    topUI = new TopUI(this);
     
   }
   
@@ -75,16 +77,34 @@ public class Mercurial extends JFrame{
   /**
    * Display and set up the left UI
    */
-  private void setLeftUI(){
+  public void setLeftUI() {
     
-    LeftUI leftUI = new LeftUI(this);
+    leftUI = new LeftUI(this);
     
   }
   
   /**
+   * Getter for the LeftUI
+   * 
+   * @return leftUI panel
+   */
+  public LeftUI getLeftUI() {
+    return this.leftUI;
+  }
+
+  /**
+   * Getter for the TopUI
+   * 
+   * @return topUI panel
+   */
+  public TopUI getTopUI() {
+    return this.topUI;
+  }
+
+  /**
    * Display and set up the Main calendar
    */
-  private void setCalendar() {
+  public void setCalendar() {
 
     MainCalendar mainCal = new MainCalendar(this);
 
