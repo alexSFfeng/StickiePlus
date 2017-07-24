@@ -9,12 +9,13 @@ import java.util.Calendar;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+
+import mercurial.Mercurial;
 
 
 /**
@@ -72,7 +73,7 @@ public class MainCalendar extends JPanel {
   private static final int NUM_COLS = 7;
   private static final int ROW_HEIGHT = 65;
 
-  private static final Color CALENDAR_COLOR = new Color(100, 100, 100);
+  public static final Color CALENDAR_COLOR = new Color(100, 100, 100);
   private static final int YEAR_LIMIT = 10;
   private static final int CALENDAR_OFFSET = 2;
   
@@ -83,7 +84,7 @@ public class MainCalendar extends JPanel {
    *          the main window of the program
    */
   @SuppressWarnings("deprecation")
-  public MainCalendar(JFrame mainFrame) {
+  public MainCalendar(Mercurial mainFrame) {
 
     // initialize the calendar for local time and date
     currentCal = Calendar.getInstance();
@@ -138,7 +139,7 @@ public class MainCalendar extends JPanel {
     today = new JButton("Today");
     today.setFont(new Font("Marker Felt", Font.ITALIC, 29));
     today.setPreferredSize(new Dimension(BUTTON_PADDING, MON_HEIGHT));
-    today.setForeground(Color.yellow);
+    today.setForeground(Color.RED);
 
     // create rigid area
     monthSubPanel = new JPanel(new BorderLayout());
@@ -159,7 +160,13 @@ public class MainCalendar extends JPanel {
     topContainel.add(topYearPanel);
 
     /*----------------------------Days part of the calendar----------*/
-    tableModel = new DefaultTableModel();
+    tableModel = new DefaultTableModel() {
+
+      @Override
+      public boolean isCellEditable(int row, int col) {
+        return false;
+      }
+    };
     calendarTable = new JTable(tableModel);
     daysPane = new JScrollPane(calendarTable);
 
@@ -189,7 +196,7 @@ public class MainCalendar extends JPanel {
 
     this.setBackground(CALENDAR_COLOR);
 
-    refreshCalendar(currentMonth, currentYear);
+    refreshCalendar(currentMonth, currentYear, mainFrame);
     mainFrame.add(this);
 
   }
@@ -201,8 +208,11 @@ public class MainCalendar extends JPanel {
    *          - the new month being moved to
    * @param targetYear
    *          - the new year being moved to
+   * @param frameReference
+   *          - the frame being used to display the calendar and holds the UI
    */
-  private void refreshCalendar(int targetMonth, int targetYear) {
+  private void refreshCalendar(int targetMonth, int targetYear,
+      Mercurial frameReference) {
 
     /*-----------------------BUTTON ENABLE STATUS---------------------*/
 
@@ -255,5 +265,9 @@ public class MainCalendar extends JPanel {
       tableModel.setValueAt(i, row, column);
     }
 
+    // apply renderer
+    calendarTable.setDefaultRenderer(calendarTable.getColumnClass(0),
+        new MainCalendarCellRenderer(currentCal, tempCalendar,
+            frameReference.getLeftUI()));
   }
 }
