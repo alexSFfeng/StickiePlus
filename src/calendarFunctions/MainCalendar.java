@@ -5,12 +5,16 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Calendar;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -38,6 +42,9 @@ public class MainCalendar extends JPanel {
       yearSubPanel;
   private JButton nextYearButton, prevYearButton, nextMonButton, prevMonButton,
       yearButton, monthButton, today;
+  private JPopupMenu yearMenu, monthMenu;
+
+  private Mercurial frameRef;
 
   // appearance constants
   private static final int PANEL_WIDTH = 200;
@@ -58,7 +65,8 @@ public class MainCalendar extends JPanel {
   private static final String[] DAYS_OF_WEEK = { "SUN", "MON", "TUE", "WED",
       "THU", "FRI", "SAT" };
   private static final String[] MONS_OF_YEAR = { "January", "February", "March",
-      "April", "May", "June", "July", "August", "September", "November",
+      "April", "May", "June", "July", "August", "September", "October",
+      "November",
       "December" };
 
   // main grid ( a table of the days displayed in the scrollpane)
@@ -67,8 +75,8 @@ public class MainCalendar extends JPanel {
   private JScrollPane daysPane;
 
   // the build in calendar being used
-  private Calendar currentCal;
-  private int currentYear, currentMonth, currentDay;
+  private Calendar realCal;
+  private int realYear, realMonth, realDay, programYear, programMonth;
 
   private static final int NUM_ROWS = 6;
   private static final int NUM_COLS = 7;
@@ -87,11 +95,18 @@ public class MainCalendar extends JPanel {
   @SuppressWarnings("deprecation")
   public MainCalendar(Mercurial mainFrame) {
 
+    // storing reference to the mainFrame
+    frameRef = mainFrame;
+
     // initialize the calendar for local time and date
-    currentCal = Calendar.getInstance();
-    currentYear = currentCal.get(Calendar.YEAR);
-    currentMonth = currentCal.get(Calendar.MONTH);
-    currentDay = currentCal.get(Calendar.DAY_OF_MONTH);
+    realCal = Calendar.getInstance();
+    realYear = realCal.get(Calendar.YEAR);
+    realMonth = realCal.get(Calendar.MONTH);
+    realDay = realCal.get(Calendar.DAY_OF_MONTH);
+
+    // the program's month and year (can be modified by user)
+    programMonth = realMonth;
+    programYear = realYear;
 
     /*--------- setting up the top layout for year and month GUI-----------------*/
     this.setLayout(new BorderLayout());
@@ -109,7 +124,7 @@ public class MainCalendar extends JPanel {
     nextYearButton.setFont(new Font("Marker Felt", Font.BOLD, NXT_PRV_FONT));
     prevYearButton = new JButton("<<");
     prevYearButton.setFont(new Font("Marker Felt", Font.BOLD, NXT_PRV_FONT));
-    yearButton = new JButton("Year: " + currentYear);
+    yearButton = new JButton("Year: " + realYear);
     yearButton.setFont(new Font("Marker Felt", Font.BOLD, YEAR_FONT));
     yearButton.setPreferredSize(new Dimension(YEAR_WIDTH, YEAR_HEIGHT));
 
@@ -134,7 +149,7 @@ public class MainCalendar extends JPanel {
     nextMonButton.setFont(new Font("Marker Felt", Font.BOLD, NXT_PRV_FONT));
     prevMonButton = new JButton("<");
     prevMonButton.setFont(new Font("Marker Felt", Font.BOLD, NXT_PRV_FONT));
-    monthButton = new JButton(MONS_OF_YEAR[currentMonth]);
+    monthButton = new JButton(MONS_OF_YEAR[realMonth]);
     monthButton.setFont(new Font("Marker Felt", Font.BOLD, MON_FONT));
     monthButton.setPreferredSize(new Dimension(MON_WIDTH, MON_HEIGHT));
     today = new JButton("Today");
@@ -161,6 +176,8 @@ public class MainCalendar extends JPanel {
     topContainel.add(topYearPanel);
 
     /*----------------------------Days part of the calendar----------*/
+
+    // table is selectable but not double-click editable
     tableModel = new DefaultTableModel() {
 
       @Override
@@ -168,6 +185,7 @@ public class MainCalendar extends JPanel {
         return false;
       }
     };
+
     calendarTable = new JTable(tableModel);
     daysPane = new JScrollPane(calendarTable);
 
@@ -191,15 +209,123 @@ public class MainCalendar extends JPanel {
     calendarTable.setRowHeight(ROW_HEIGHT);
     calendarTable.setBackground(CALENDAR_COLOR);
 
+    /*-----------------------BUTTON EVENT LISTENERS-------------------------*/
+    nextYearButton.addActionListener(new NextYearListener());
+    prevYearButton.addActionListener(new PrevYearListener());
+    prevMonButton.addActionListener(new PrevMonListener());
+    nextMonButton.addActionListener(new NextMonListener());
+    yearButton.addActionListener(new YearListener());
+    // monthButton.addActionListener(new MonthListener());
+    today.addActionListener(new TodayListener());
+
+    /*----------------------Popup Menu initialization ---------------------*/
+    yearMenu = new JPopupMenu();
+    monthMenu = new JPopupMenu();
+
+    // adding years to the menu
+    for (int i = realYear - YEAR_LIMIT; i <= realYear + YEAR_LIMIT; i++) {
+      yearMenu.add(new JMenuItem("Year: " + i));
+    }
+
+    // adding months to the box
+    for (int i = 0; i <= Calendar.DECEMBER; i++) {
+      monthMenu.add(new JMenuItem(MONS_OF_YEAR[i]));
+    }
+
+    yearButton.setComponentPopupMenu(yearMenu);
+    monthButton.setComponentPopupMenu(monthMenu);
+
     // adding calendar components to the panel
     this.add(topContainel, BorderLayout.NORTH);
     this.add(daysPane);
 
     this.setBackground(CALENDAR_COLOR);
 
-    refreshCalendar(currentMonth, currentYear, mainFrame);
+    refreshCalendar(realMonth, realYear, mainFrame);
     mainFrame.add(this);
 
+  }
+
+  /*-------------------------Button Listener Inner Classes----------------*/
+
+  private class NextYearListener implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      programYear++;
+      MainCalendar.this.refreshCalendar(programMonth, programYear, frameRef);
+    }
+
+  }
+
+  private class NextMonListener implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+      // go into the next year if program at the last month
+      if (programMonth == Calendar.DECEMBER) {
+        programMonth = Calendar.JANUARY;
+        programYear++;
+      }
+      // just increment month by one
+      else {
+        programMonth++;
+      }
+
+      MainCalendar.this.refreshCalendar(programMonth, programYear, frameRef);
+    }
+
+  }
+
+  private class PrevYearListener implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      programYear--;
+      MainCalendar.this.refreshCalendar(programMonth, programYear, frameRef);
+    }
+
+  }
+
+  private class PrevMonListener implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+      // go into the next year if program at the first month
+      if (programMonth == Calendar.JANUARY) {
+        programMonth = Calendar.NOVEMBER;
+        programYear--;
+      } else {
+        programMonth--;
+      }
+
+      MainCalendar.this.refreshCalendar(programMonth, programYear, frameRef);
+    }
+
+  }
+
+  private class TodayListener implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+      programYear = realYear;
+      programMonth = realMonth;
+      MainCalendar.this.refreshCalendar(programMonth, programYear, frameRef);
+
+    }
+  }
+
+  private class YearListener implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+      yearMenu.show((Component) e.getSource(), 0, yearButton.getHeight());
+
+    }
   }
 
   /**
@@ -224,19 +350,19 @@ public class MainCalendar extends JPanel {
     prevMonButton.setEnabled(true);
 
     // month or year too far back (lower bound)
-    if (targetMonth == 0 && targetYear <= targetYear - YEAR_LIMIT) {
+    if (targetMonth == 0 && targetYear <= realYear - YEAR_LIMIT) {
       prevYearButton.setEnabled(false);
       prevMonButton.setEnabled(false);
-    } else if (targetYear <= targetYear - YEAR_LIMIT) {
+    } else if (targetYear <= realYear - YEAR_LIMIT) {
       prevYearButton.setEnabled(false);
     }
 
     // month or year too far ahead (upper bound)
     if (targetMonth == Calendar.DECEMBER
-        && targetYear >= targetYear + YEAR_LIMIT) {
+        && targetYear >= realYear + YEAR_LIMIT) {
       nextYearButton.setEnabled(false);
       nextMonButton.setEnabled(false);
-    } else if (targetYear >= targetYear + YEAR_LIMIT) {
+    } else if (targetYear >= realYear + YEAR_LIMIT) {
       nextYearButton.setEnabled(false);
     }
 
@@ -257,8 +383,6 @@ public class MainCalendar extends JPanel {
       }
     }
 
-    // TODO: change this into displaying a panel with shorthanded task
-    // descriptions
     // print out the day of the month onto the calendar
     for (int i = 1; i <= numOfDaysInMonth; i++) {
       int row = (i + startOfMon - CALENDAR_OFFSET) / DAYS_OF_WEEK.length;
@@ -268,20 +392,37 @@ public class MainCalendar extends JPanel {
 
     // apply renderer
     calendarTable.setDefaultRenderer(calendarTable.getColumnClass(0),
-        new MainCalendarCellRenderer(currentCal, tempCalendar,
+        new MainCalendarCellRenderer(realCal, tempCalendar,
             frameReference.getLeftUI()));
 
-    // ???? Update the row height base on the number of components in JPanel
-    for (int row = 0; row < calendarTable.getRowCount(); row++) {
+    this.updateRowHeight();
+
+  }
+
+  /**
+   * Update row height of the calendar base on the maximum height of the
+   * components inside the cell
+   */
+  private void updateRowHeight() {
+
+    // Update the row height base on the number of components in JPanel
+    for (int row = 0; row < NUM_ROWS; row++) {
       int rowHeight = calendarTable.getRowHeight();
 
-      for (int column = 0; column < calendarTable.getColumnCount(); column++) {
+      /*
+       * get the height of the renderer cell and readjust height base on the
+       * height of the height of the components inside the cell
+       */
+      for (int column = 0; column < NUM_COLS; column++) {
         Component comp = calendarTable.prepareRenderer(
             calendarTable.getCellRenderer(row, column), row, column);
         rowHeight = Math.max(rowHeight, comp.getPreferredSize().height);
       }
 
+      // set the height for the whole row
       calendarTable.setRowHeight(row, rowHeight);
     }
+
   }
+
 }
