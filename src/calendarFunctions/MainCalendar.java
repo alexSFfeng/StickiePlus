@@ -215,21 +215,28 @@ public class MainCalendar extends JPanel {
     prevMonButton.addActionListener(new PrevMonListener());
     nextMonButton.addActionListener(new NextMonListener());
     yearButton.addActionListener(new YearListener());
-    // monthButton.addActionListener(new MonthListener());
+    monthButton.addActionListener(new MonthListener());
     today.addActionListener(new TodayListener());
 
     /*----------------------Popup Menu initialization ---------------------*/
-    yearMenu = new JPopupMenu();
-    monthMenu = new JPopupMenu();
+    yearMenu = new JPopupMenu("YEARS");
+    monthMenu = new JPopupMenu("MONTHS");
 
+    ActionListener yearItemListener = new YearItemListener();
+    ActionListener monthItemListener = new MonItemListener();
     // adding years to the menu
     for (int i = realYear - YEAR_LIMIT; i <= realYear + YEAR_LIMIT; i++) {
-      yearMenu.add(new JMenuItem("Year: " + i));
+      JMenuItem newItem = new JMenuItem(String.valueOf(i));
+      yearMenu.add(newItem);
+      newItem.addActionListener(yearItemListener);
     }
 
     // adding months to the box
     for (int i = 0; i <= Calendar.DECEMBER; i++) {
-      monthMenu.add(new JMenuItem(MONS_OF_YEAR[i]));
+      JMenuItem newItem = new JMenuItem(MONS_OF_YEAR[i]);
+      newItem.setActionCommand(String.valueOf(i));
+      monthMenu.add(newItem);
+      newItem.addActionListener(monthItemListener);
     }
 
     yearButton.setComponentPopupMenu(yearMenu);
@@ -328,6 +335,41 @@ public class MainCalendar extends JPanel {
     }
   }
 
+  private class MonthListener implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+      monthMenu.show((Component) e.getSource(), 0,
+          monthButton.getHeight());
+
+    }
+  }
+
+  private class MonItemListener implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+      programMonth = Integer.parseInt(e.getActionCommand());
+      monthButton.setText(MONS_OF_YEAR[programMonth]);
+      MainCalendar.this.refreshCalendar(programMonth, programYear, frameRef);
+    }
+
+  }
+
+  private class YearItemListener implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+      programYear = Integer.parseInt(((JMenuItem) e.getSource()).getText());
+      yearButton.setText("Year: " + programYear);
+      MainCalendar.this.refreshCalendar(programMonth, programYear, frameRef);
+
+    }
+
+  }
   /**
    * Helper method to refresh the calendar display when buttons were clicked
    * 
