@@ -16,6 +16,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
 
+import calendarFunctions.MainCalendar;
+
 /**
  * Left side UI configurations for Mercurial
  * 
@@ -122,6 +124,8 @@ public class LeftUI implements UI_Panel {
     public void actionPerformed(ActionEvent e) {
       new BoxTextArea(leftPanelBotTop, LeftUI.this);
       leftPanelBotTop.revalidate();
+      MainCalendar.refreshCalendar(MainCalendar.getProgMonth(),
+          MainCalendar.getProgYear());
     }
   }
 
@@ -163,6 +167,8 @@ public class LeftUI implements UI_Panel {
       // since last validate doesn't not show real time visual update, needs
       // repaint
       leftPanelBotTop.repaint();
+      MainCalendar.refreshCalendar(MainCalendar.getProgMonth(),
+          MainCalendar.getProgYear());
     }
 
   }
@@ -194,6 +200,7 @@ public class LeftUI implements UI_Panel {
       for (int i = 0; i < leftPanelBotTop.getComponentCount(); i++) {
         ((BoxTextArea) (leftPanelBotTop.getComponent(i)))
             .setSelected(selectedAll);
+
       }
 
       setSelection(leftPanelBotTop, selectedAll);
@@ -226,7 +233,8 @@ public class LeftUI implements UI_Panel {
 
       // relist all the BoxTextArea objects in the target panel
       relistBoxes(boxArray, leftPanelBotTop);
-
+      MainCalendar.refreshCalendar(MainCalendar.getProgMonth(),
+          MainCalendar.getProgYear());
     }
 
   }
@@ -257,6 +265,8 @@ public class LeftUI implements UI_Panel {
 
       // relist all the BoxTextArea objects after sorting
       relistBoxes(boxArray, leftPanelBotTop);
+      MainCalendar.refreshCalendar(MainCalendar.getProgMonth(),
+          MainCalendar.getProgYear());
 
     }
 
@@ -328,9 +338,9 @@ public class LeftUI implements UI_Panel {
    * 
    * @return the array of assigned tasks
    */
-  public BoxTextArea[] getAllTasks() {
+  public Object[] getAllTasks() {
 
-    return (BoxTextArea[]) leftPanelBotTop.getComponents();
+    return leftPanelBotTop.getComponents();
 
   }
 }

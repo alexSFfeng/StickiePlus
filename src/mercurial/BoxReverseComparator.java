@@ -1,6 +1,7 @@
 package mercurial;
 
 import java.util.Comparator;
+import java.util.Date;
 
 /**
  * Sort BoxTextArea in reverse (lower priority level goes first)
@@ -24,16 +25,26 @@ public class BoxReverseComparator implements Comparator {
    *          the second BoxTextArea
    * @return -1 if o1 < o2, 1 if o1 > o2, 0 if o1 == o2
    */
+  @SuppressWarnings("deprecation")
   @Override
   public int compare(Object o1, Object o2) {
 
     if (((BoxTextArea) o1).isSelected() == ((BoxTextArea) o2).isSelected()) {
 
-      // the later due dates will be higher in the lsit
-      if (((BoxTextArea) o1).getDate().after(((BoxTextArea) o2).getDate())) {
+      /*-----------LATER DEADLINE COMES FIRST REGARDLESS OF PRIORITY---*/
+      Date o1Date = ((BoxTextArea) o1).getFullDate();
+      Date o2Date = ((BoxTextArea) o2).getFullDate();
+
+      // o1's date comes after o2's date
+      if (o1Date.getYear() > o2Date.getYear()
+          && o1Date.getMonth() > o2Date.getMonth()
+          && o1Date.getDate() > o2Date.getDate()) {
         return -1;
-      } else if (((BoxTextArea) o1).getDate()
-          .before(((BoxTextArea) o2).getDate())) {
+      }
+      // o1's date comes before o2's date
+      else if (o1Date.getYear() < o2Date.getYear()
+          && o1Date.getMonth() < o2Date.getMonth()
+          && o1Date.getDate() < o2Date.getDate()) {
         return 1;
       }
       // same deadline, check priority

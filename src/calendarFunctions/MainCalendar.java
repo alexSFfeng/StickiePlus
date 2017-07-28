@@ -40,8 +40,9 @@ public class MainCalendar extends JPanel {
   // top main container panel
   private JPanel topContainel, topYearPanel, topMonthPanel, monthSubPanel,
       yearSubPanel;
-  private JButton nextYearButton, prevYearButton, nextMonButton, prevMonButton,
-      yearButton, monthButton, today;
+  private static JButton nextYearButton, prevYearButton, nextMonButton,
+      prevMonButton;
+  private static JButton yearButton, monthButton, today, refresh;
   private JPopupMenu yearMenu, monthMenu;
 
   private Mercurial frameRef;
@@ -70,13 +71,16 @@ public class MainCalendar extends JPanel {
       "December" };
 
   // main grid ( a table of the days displayed in the scrollpane)
-  private DefaultTableModel tableModel;
-  private JTable calendarTable;
+  private static DefaultTableModel tableModel;
+  private static JTable calendarTable;
   private JScrollPane daysPane;
 
   // the build in calendar being used
-  private Calendar realCal;
-  private int realYear, realMonth, realDay, programYear, programMonth;
+  private static Calendar realCal;
+  private static int realYear;
+  private int realMonth;
+  private static int programYear;
+  private static int programMonth;
 
   private static final int NUM_ROWS = 6;
   private static final int NUM_COLS = 7;
@@ -92,7 +96,6 @@ public class MainCalendar extends JPanel {
    * @param mainFrame:
    *          the main window of the program
    */
-  @SuppressWarnings("deprecation")
   public MainCalendar(Mercurial mainFrame) {
 
     // storing reference to the mainFrame
@@ -102,7 +105,6 @@ public class MainCalendar extends JPanel {
     realCal = Calendar.getInstance();
     realYear = realCal.get(Calendar.YEAR);
     realMonth = realCal.get(Calendar.MONTH);
-    realDay = realCal.get(Calendar.DAY_OF_MONTH);
 
     // the program's month and year (can be modified by user)
     programMonth = realMonth;
@@ -152,17 +154,22 @@ public class MainCalendar extends JPanel {
     monthButton = new JButton(MONS_OF_YEAR[realMonth]);
     monthButton.setFont(new Font("Marker Felt", Font.BOLD, MON_FONT));
     monthButton.setPreferredSize(new Dimension(MON_WIDTH, MON_HEIGHT));
+
+    // utility buttons (jumping back to today and refreshing the calendar)
     today = new JButton("Today");
     today.setFont(new Font("Marker Felt", Font.ITALIC, 29));
     today.setPreferredSize(new Dimension(BUTTON_PADDING, MON_HEIGHT));
     today.setForeground(Color.ORANGE);
 
+    refresh = new JButton("Refresh");
+    refresh.setFont(new Font("Marker Felt", Font.ITALIC, 29));
+    refresh.setPreferredSize(new Dimension(BUTTON_PADDING, MON_HEIGHT));
+    refresh.setForeground(Color.CYAN);
+
     // create rigid area
     monthSubPanel = new JPanel(new BorderLayout());
-    monthSubPanel.add(Box.createRigidArea(new Dimension(BUTTON_PADDING, 0)),
-        BorderLayout.WEST);
-    monthSubPanel.add(today,
-        BorderLayout.EAST);
+    monthSubPanel.add(refresh, BorderLayout.WEST);
+    monthSubPanel.add(today, BorderLayout.EAST);
     monthSubPanel.add(monthButton);
 
     // adding the button to the month panel
@@ -217,6 +224,7 @@ public class MainCalendar extends JPanel {
     yearButton.addActionListener(new YearListener());
     monthButton.addActionListener(new MonthListener());
     today.addActionListener(new TodayListener());
+    refresh.addActionListener(new RefreshListener());
 
     /*----------------------Popup Menu initialization ---------------------*/
     yearMenu = new JPopupMenu("YEARS");
@@ -248,7 +256,7 @@ public class MainCalendar extends JPanel {
 
     this.setBackground(CALENDAR_COLOR);
 
-    refreshCalendar(realMonth, realYear, mainFrame);
+    refreshCalendar(realMonth, realYear);
     mainFrame.add(this);
 
   }
@@ -260,7 +268,7 @@ public class MainCalendar extends JPanel {
     @Override
     public void actionPerformed(ActionEvent e) {
       programYear++;
-      MainCalendar.this.refreshCalendar(programMonth, programYear, frameRef);
+      MainCalendar.refreshCalendar(programMonth, programYear);
     }
 
   }
@@ -280,7 +288,7 @@ public class MainCalendar extends JPanel {
         programMonth++;
       }
 
-      MainCalendar.this.refreshCalendar(programMonth, programYear, frameRef);
+      MainCalendar.refreshCalendar(programMonth, programYear);
     }
 
   }
@@ -290,7 +298,7 @@ public class MainCalendar extends JPanel {
     @Override
     public void actionPerformed(ActionEvent e) {
       programYear--;
-      MainCalendar.this.refreshCalendar(programMonth, programYear, frameRef);
+      MainCalendar.refreshCalendar(programMonth, programYear);
     }
 
   }
@@ -308,7 +316,7 @@ public class MainCalendar extends JPanel {
         programMonth--;
       }
 
-      MainCalendar.this.refreshCalendar(programMonth, programYear, frameRef);
+      MainCalendar.refreshCalendar(programMonth, programYear);
     }
 
   }
@@ -320,7 +328,17 @@ public class MainCalendar extends JPanel {
 
       programYear = realYear;
       programMonth = realMonth;
-      MainCalendar.this.refreshCalendar(programMonth, programYear, frameRef);
+      MainCalendar.refreshCalendar(programMonth, programYear);
+
+    }
+  }
+
+  private class RefreshListener implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+      MainCalendar.refreshCalendar(programMonth, programYear);
 
     }
   }
@@ -353,7 +371,7 @@ public class MainCalendar extends JPanel {
 
       programMonth = Integer.parseInt(e.getActionCommand());
       monthButton.setText(MONS_OF_YEAR[programMonth]);
-      MainCalendar.this.refreshCalendar(programMonth, programYear, frameRef);
+      MainCalendar.refreshCalendar(programMonth, programYear);
     }
 
   }
@@ -365,7 +383,7 @@ public class MainCalendar extends JPanel {
 
       programYear = Integer.parseInt(((JMenuItem) e.getSource()).getText());
       yearButton.setText("Year: " + programYear);
-      MainCalendar.this.refreshCalendar(programMonth, programYear, frameRef);
+      MainCalendar.refreshCalendar(programMonth, programYear);
 
     }
 
@@ -380,8 +398,7 @@ public class MainCalendar extends JPanel {
    * @param frameReference
    *          - the frame being used to display the calendar and holds the UI
    */
-  private void refreshCalendar(int targetMonth, int targetYear,
-      Mercurial frameReference) {
+  public static void refreshCalendar(int targetMonth, int targetYear) {
 
     /*-----------------------BUTTON ENABLE STATUS---------------------*/
 
@@ -435,9 +452,9 @@ public class MainCalendar extends JPanel {
     // apply renderer
     calendarTable.setDefaultRenderer(calendarTable.getColumnClass(0),
         new MainCalendarCellRenderer(realCal, tempCalendar,
-            frameReference.getLeftUI()));
+            Mercurial.getLeftUI()));
 
-    this.updateRowHeight();
+    updateRowHeight();
 
   }
 
@@ -445,7 +462,7 @@ public class MainCalendar extends JPanel {
    * Update row height of the calendar base on the maximum height of the
    * components inside the cell
    */
-  private void updateRowHeight() {
+  private static void updateRowHeight() {
 
     // Update the row height base on the number of components in JPanel
     for (int row = 0; row < NUM_ROWS; row++) {
@@ -467,4 +484,21 @@ public class MainCalendar extends JPanel {
 
   }
 
+  /**
+   * Getter for program year
+   * 
+   * @return program year
+   */
+  public static int getProgYear() {
+    return programYear;
+  }
+
+  /**
+   * Getter for program month
+   * 
+   * @return program month
+   */
+  public static int getProgMonth() {
+    return programMonth;
+  }
 }
