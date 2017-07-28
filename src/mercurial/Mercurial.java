@@ -34,8 +34,8 @@ public class Mercurial extends JFrame{
   private static final int FRAME_WIDTH = 1000;
   private static final int FRAME_HEIGHT = 700;
   private static final int HEADER_FONT_SIZE = 16;
-  private TopUI topUI;
-  private LeftUI leftUI;
+  private static TopUI topUI;
+  private static LeftUI leftUI;
   
   /**
    * display the user interface
@@ -88,8 +88,8 @@ public class Mercurial extends JFrame{
    * 
    * @return leftUI panel
    */
-  public LeftUI getLeftUI() {
-    return this.leftUI;
+  public static LeftUI getLeftUI() {
+    return leftUI;
   }
 
   /**
@@ -97,8 +97,8 @@ public class Mercurial extends JFrame{
    * 
    * @return topUI panel
    */
-  public TopUI getTopUI() {
-    return this.topUI;
+  public static TopUI getTopUI() {
+    return topUI;
   }
 
   /**

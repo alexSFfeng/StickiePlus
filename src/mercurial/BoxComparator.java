@@ -1,6 +1,7 @@
 package mercurial;
 
 import java.util.Comparator;
+import java.util.Date;
 
 /**
  * Comparator for BoxTextArea objects
@@ -25,6 +26,7 @@ public class BoxComparator implements Comparator {
    *          the second BoxTextArea
    * @return -1 if o1 > o2, 1 if o1 < o2, 0 if o1 == o2
    */
+  @SuppressWarnings("deprecation")
   @Override
   public int compare(Object o1, Object o2) {
 
@@ -32,11 +34,19 @@ public class BoxComparator implements Comparator {
     if (((BoxTextArea) o1).isSelected() == ((BoxTextArea) o2).isSelected()) {
 
       /*-----------CLOSER DEADLINE COMES FIRST REGARDLESS OF PRIORITY---*/
+      Date o1Date = ((BoxTextArea) o1).getFullDate();
+      Date o2Date = ((BoxTextArea) o2).getFullDate();
 
-      if (((BoxTextArea) o1).getDate().after(((BoxTextArea) o2).getDate())) {
+      // o1's date comes after o2's date
+      if (o1Date.getYear() > o2Date.getYear()
+          && o1Date.getMonth() > o2Date.getMonth()
+          && o1Date.getDate() > o2Date.getDate()) {
         return 1;
-      } else if (((BoxTextArea) o1).getDate()
-          .before(((BoxTextArea) o2).getDate())) {
+      }
+      // o1's date comes before o2's date
+      else if (o1Date.getYear() < o2Date.getYear()
+          && o1Date.getMonth() < o2Date.getMonth()
+          && o1Date.getDate() < o2Date.getDate()) {
         return -1;
       }
       // same deadline, check priority

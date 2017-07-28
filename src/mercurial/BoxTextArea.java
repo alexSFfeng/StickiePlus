@@ -16,12 +16,15 @@ import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import calendarFunctions.JDatePicker;
+import com.toedter.calendar.JDateChooser;
 
 /**
- * check boxes that holds goal, task, and pastDue informations
- * A check box should have a text area (scrollable) next to it
- * Under it should be a slider from 1 - 10 for priority level.
+ * check boxes that holds goal, task, and pastDue informations A check box
+ * should have a text area (scrollable) next to it Under it should be a slider
+ * from 1 - 10 for priority level.
+ * 
+ * Credits to Kai Toedter's work on JCalendar and JDateChooser (Date selection
+ * functionality implemented by using the JCalendar library created by Toedter)
  * 
  * @author Shanfeng Feng
  * @version 0.1
@@ -40,7 +43,7 @@ public class BoxTextArea extends JPanel
   // due date component group
   private JPanel duePanel;
   private JLabel dueSign;
-  private JDatePicker dueDatePicker;
+  private JDateChooser dueDatePicker;
 
   // the UI_Panel that this BoxTextArea object belongs to
   private UI_Panel refPanel;
@@ -91,7 +94,7 @@ public class BoxTextArea extends JPanel
     prioritySlider = new JSlider(MIN_PRIORITY, MAX_PRIORITY);
 
     // due date component initialization
-    dueDatePicker = new JDatePicker();
+    dueDatePicker = new JDateChooser();
     dueSign = new JLabel("Due on");
     dueSign.setForeground(Color.red);
     duePanel = new JPanel(new BorderLayout());
@@ -135,6 +138,7 @@ public class BoxTextArea extends JPanel
 
     // store the reference to the UI_Panel that contains this object
     refPanel = containerUI;
+
 
     mainPanel.add(this);
   }
@@ -203,6 +207,15 @@ public class BoxTextArea extends JPanel
   }
   
   /**
+   * Get priority level box color
+   * 
+   * @return the box's color corresponding to the priority level
+   */
+  public Color getPriorityColor() {
+    return editable.getBackground();
+  }
+
+  /**
    * Get the current selected status of the boxTextArea
    * 
    * @return the current selection status
@@ -227,10 +240,28 @@ public class BoxTextArea extends JPanel
    * 
    * @return the Date object that holds the due date selected
    */
-  public Date getDate() {
+  public Date getFullDate() {
 
     return dueDatePicker.getDate();
 
   }
 
+  /**
+   * Tells whether or not the task box is empty
+   * 
+   * @return whether the task box is empty or not
+   */
+  public boolean isBoxEmpty() {
+    return editable.getText().length() == 0;
+  }
+
+  /**
+   * Get the first few words in the text field to represent the task
+   * 
+   * @return the string that consist of the few words
+   */
+  public String getTextRep() {
+    String textStr = editable.getText();
+    return textStr;
+  }
 }
