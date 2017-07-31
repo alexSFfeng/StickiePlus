@@ -42,7 +42,6 @@ public class Mercurial extends JFrame{
    */
   public void displayUI(){
     
-    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setPreferredSize(new Dimension(FRAME_WIDTH,FRAME_HEIGHT));
     this.setSize(this.getPreferredSize());
     this.setTitle("Mercurial");

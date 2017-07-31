@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Calendar;
 
 import javax.swing.BorderFactory;
@@ -257,14 +259,41 @@ public class MainCalendar extends JPanel {
     this.setBackground(CALENDAR_COLOR);
 
     refreshCalendar(realMonth, realYear);
+
+    // doublic click cell to display all task on that day
+    calendarTable.addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        if (e.getClickCount() == 2) {
+          JTable target = (JTable) e.getSource();
+          int row = target.rowAtPoint(e.getPoint());
+          int column = target.columnAtPoint(e.getPoint());
+          Component comp = calendarTable.prepareRenderer(
+              calendarTable.getCellRenderer(row, column), row, column);
+          ((MainCalendarCellRenderer) comp).createPopUp(calendarTable);
+        }
+      }
+    });
+
     mainFrame.add(this);
 
   }
 
   /*-------------------------Button Listener Inner Classes----------------*/
 
+  /**
+   * Event handling for next year button >>
+   * 
+   * @author Shanfeng Feng
+   * 
+   */
   private class NextYearListener implements ActionListener {
 
+    /**
+     * Increment the program year by 1 and refresh the whole calendar
+     * 
+     * @param e:
+     *          the action event that invoked this call (button click)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
       programYear++;
@@ -273,8 +302,20 @@ public class MainCalendar extends JPanel {
 
   }
 
+  /**
+   * Event handling for next month button >
+   * 
+   * @author Shanfeng Feng
+   * 
+   */
   private class NextMonListener implements ActionListener {
 
+    /**
+     * increment the program month and readjust program year if necessary
+     * 
+     * @param e:
+     *          the action event that invoked this call (button click)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -293,8 +334,20 @@ public class MainCalendar extends JPanel {
 
   }
 
+  /**
+   * Event handling for previous year button <<
+   * 
+   * @author Shanfeng Feng
+   * 
+   */
   private class PrevYearListener implements ActionListener {
 
+    /**
+     * Decrement program year and refresh the calendar
+     * 
+     * @param e:
+     *          the action event that invoked this call (button click)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
       programYear--;
@@ -303,12 +356,24 @@ public class MainCalendar extends JPanel {
 
   }
 
+  /**
+   * Event handling for previous month button <
+   * 
+   * @author Shanfeng Feng
+   * 
+   */
   private class PrevMonListener implements ActionListener {
 
+    /**
+     * decrement the program month and readjust program year if needed
+     * 
+     * @param e:
+     *          the action event that invoked this call (button click)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
 
-      // go into the next year if program at the first month
+      // go into the previous year if program at the first month
       if (programMonth == Calendar.JANUARY) {
         programMonth = Calendar.NOVEMBER;
         programYear--;
@@ -321,8 +386,20 @@ public class MainCalendar extends JPanel {
 
   }
 
+  /**
+   * Event handling for today button
+   * 
+   * @author Shanfeng Feng
+   * 
+   */
   private class TodayListener implements ActionListener {
 
+    /**
+     * Change program year/month to today's real date
+     * 
+     * @param e:
+     *          the action event that invoked this call (button click)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -333,8 +410,20 @@ public class MainCalendar extends JPanel {
     }
   }
 
+  /**
+   * Event handling for refresh button
+   * 
+   * @author Shanfeng Feng
+   * 
+   */
   private class RefreshListener implements ActionListener {
 
+    /**
+     * Allows user to update the calendar manually
+     * 
+     * @param e:
+     *          the action event that invoked this call (button click)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -343,8 +432,20 @@ public class MainCalendar extends JPanel {
     }
   }
 
+  /**
+   * Event handling for year button
+   * 
+   * @author Shanfeng Feng
+   * 
+   */
   private class YearListener implements ActionListener {
 
+    /**
+     * Allow users to manually change the year +/- 10
+     * 
+     * @param e:
+     *          the action event that invoked this call (button click)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -353,8 +454,20 @@ public class MainCalendar extends JPanel {
     }
   }
 
+  /**
+   * Event handling for month button
+   * 
+   * @author Shanfeng Feng
+   * 
+   */
   private class MonthListener implements ActionListener {
 
+    /**
+     * Allow users to manually change the program month
+     * 
+     * @param e:
+     *          the action event that invoked this call (button click)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -364,8 +477,21 @@ public class MainCalendar extends JPanel {
     }
   }
 
+  /**
+   * Event handling for month menu items
+   * 
+   * @author Shanfeng Feng
+   * 
+   */
   private class MonItemListener implements ActionListener {
 
+    /**
+     * Selection of a month menu item would change program month to the selected
+     * month
+     * 
+     * @param e:
+     *          the action event that invoked this call
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -376,8 +502,21 @@ public class MainCalendar extends JPanel {
 
   }
 
+  /**
+   * Event handling for year menu items
+   * 
+   * @author Shanfeng Feng
+   * 
+   */
   private class YearItemListener implements ActionListener {
 
+    /**
+     * Selection of a year menu item would change program year to the selected
+     * month
+     * 
+     * @param e:
+     *          the action event that invoked this call
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
 

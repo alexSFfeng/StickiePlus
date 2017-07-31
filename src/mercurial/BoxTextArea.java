@@ -264,4 +264,5 @@ public class BoxTextArea extends JPanel
     String textStr = editable.getText();
     return textStr;
   }
+
 }
