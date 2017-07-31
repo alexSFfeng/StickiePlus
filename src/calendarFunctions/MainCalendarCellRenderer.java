@@ -4,14 +4,19 @@ package calendarFunctions;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.table.TableCellRenderer;
 
 import mercurial.BoxTextArea;
@@ -32,12 +37,23 @@ public class MainCalendarCellRenderer extends JPanel implements TableCellRendere
   private JLabel dayLabel;
   private JPanel taskPanel;
 
+  // Panel and pop up window for displaying tasks if selected
+  private JPanel displayPanel;
+  private JFrame newWindow;
+  private JScrollPane displayPane;
+
   // the calendar references and the UI that contains all the tasks
   private Calendar myCalendar, newCalendar;
   private LeftUI refUI;
 
   // the column of the calendar that is Saturday
   private static final int SATURDAY_COL = 6;
+
+  // pop up window size
+  private static final int WINDOW_WIDTH = 650;
+  private static final int WINDOW_HEIGHT = 300;
+  private static final int DISPLAY_WIDTH = 180;
+  private static final int DISPLAY_HEIGHT = 200;
 
   /**
    * Ctor for initializing the main calendar components
@@ -78,13 +94,15 @@ public class MainCalendarCellRenderer extends JPanel implements TableCellRendere
    *          - the column index of this cell
    * @return - this panel that contains all the components.
    */
-  @SuppressWarnings("deprecation")
   public Component getTableCellRendererComponent(JTable table, Object value,
                                                  boolean selected, boolean focused,
                                                  int row, int column){
 
     // remove all the components in this cell
     this.removeAll();
+
+    // obtaining all the tasks created by user
+    Object[] taskArray = refUI.getAllTasks();
 
     /*----------------- selection / deselection colors --------------------*/
     if (selected) {
@@ -111,13 +129,18 @@ public class MainCalendarCellRenderer extends JPanel implements TableCellRendere
       // label for the day of the month
       dayLabel = new JLabel(String.valueOf(value));
 
-      // panel that stores all the tasks on that day
+      // panel that stores all the tasks on that day (short description)
       taskPanel = new JPanel();
       taskPanel.setLayout(new BoxLayout(taskPanel, BoxLayout.Y_AXIS));
       taskPanel.setBackground(this.getBackground());
 
-      // put corresponding tasks into the calendar cell
-      Object[] taskArray = refUI.getAllTasks();
+      // The pop up window components for displaying the detailed tasks
+      newCalendar.set(Calendar.DATE, (Integer) value);
+      newWindow = new JFrame("Task on "
+          + new SimpleDateFormat("yyyy-MM-dd").format(newCalendar.getTime()));
+      displayPanel = new JPanel();
+      displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.X_AXIS));
+      displayPane = new JScrollPane(displayPanel);
 
       // search the Array for tasks that should be put into this date cell
       for (int i = 0; i < taskArray.length; i++) {
@@ -150,11 +173,24 @@ public class MainCalendarCellRenderer extends JPanel implements TableCellRendere
           newLabel.setOpaque(true);
           newLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
           taskPanel.add(newLabel);
+
+          this.setUpDisplayPanel((BoxTextArea) taskArray[i]);
         }
-      }
+      } // end of for loop searching for corresponding tasks
+
+      /*
+       * if (displayPanel.getComponentCount() != 0 && selected && !popUpExist) {
+       * newWindow.add(displayPane); newWindow.setSize(new
+       * Dimension(WINDOW_WIDTH, WINDOW_HEIGHT)); newWindow.setVisible(true);
+       * popUpExist = true; newWindow.addWindowListener(new WindowAdapter() {
+       * public void windowClosing(WindowEvent e) { popUpExist = false;
+       * table.clearSelection(); } }); }
+       */
+
       // add the components into the cell panel
       this.add(dayLabel, BorderLayout.NORTH);
       this.add(taskPanel);
+
     }
     return this;
   }
@@ -179,6 +215,44 @@ public class MainCalendarCellRenderer extends JPanel implements TableCellRendere
 
       this.setBackground(Color.ORANGE);
       taskPanel.setBackground(Color.ORANGE);
+    }
+  }
+
+  /**
+   * Setup a panel that display all the tasks due on the day specified by this
+   * cell
+   * 
+   * @param task:
+   *          the task box that is contained in this cell
+   */
+  private void setUpDisplayPanel(BoxTextArea task) {
+
+    JTextArea taskClone;
+    if (task.getTextRep().length() != 0) {
+      taskClone = new JTextArea(task.getTextRep());
+    } else {
+      taskClone = new JTextArea("EMPTY !!!!!?");
+    }
+
+    taskClone.setPreferredSize(new Dimension(DISPLAY_WIDTH, DISPLAY_HEIGHT));
+    taskClone.setSize(new Dimension(DISPLAY_WIDTH, DISPLAY_HEIGHT));
+
+    // the wrap around functionality of the text area
+    taskClone.setWrapStyleWord(true);
+    taskClone.setLineWrap(true);
+    taskClone.insert("PRIORITY LEVEL: " + task.getPriorityLv() + "\n", 0);
+    taskClone.setBackground(task.getPriorityColor());
+    taskClone.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    taskClone.setEditable(false);
+    displayPanel.add(taskClone);
+
+  }
+
+  public void createPopUp(JTable table) {
+    if (displayPanel.getComponentCount() != 0) {
+      newWindow.add(displayPane);
+      newWindow.setSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
+      newWindow.setVisible(true);
     }
   }
 }
