@@ -84,6 +84,39 @@ public class BoxTextArea extends JPanel
    */
   public BoxTextArea(JPanel mainPanel, UI_Panel containerUI) {
 
+    this.setup(containerUI);
+
+    // store the reference to the UI_Panel that contains this object
+    refPanel = containerUI;
+
+    mainPanel.add(this);
+  }
+
+  /**
+   * Deep Copy constructor
+   * 
+   * @param source:
+   *          the copy source BoxTextArea
+   * @param newPanel:
+   *          the panel that would contain the copy
+   * @param targetUI:
+   *          the UI this box belongs to
+   */
+  public BoxTextArea(BoxTextArea source, JPanel newPanel, UI_Panel targetUI) {
+
+    this.setup(targetUI);
+    this.prioritySlider.setValue(source.getPriorityLv());
+    this.dueDatePicker.setDate(source.getFullDate());
+    this.editable.insert(source.getTextRep(), 0);
+
+    newPanel.add(this);
+
+  }
+
+  /**
+   * Setup : Instance initialization
+   */
+  private void setup(UI_Panel targetUI) {
     // instantiate components for a checkbox and corresponding text area
     this.setLayout(new BorderLayout());
     this.setSize(new Dimension(SLOT_WIDTH, SLOT_HEIGHT));
@@ -135,12 +168,6 @@ public class BoxTextArea extends JPanel
 
     this.setBackground(PANEL_COLOR);
     editable.setBackground(BOX_COLOR);
-
-    // store the reference to the UI_Panel that contains this object
-    refPanel = containerUI;
-
-
-    mainPanel.add(this);
   }
 
   /**
@@ -256,7 +283,7 @@ public class BoxTextArea extends JPanel
   }
 
   /**
-   * Get the first few words in the text field to represent the task
+   * Get the text field to represent the task
    * 
    * @return the string that consist of the few words
    */

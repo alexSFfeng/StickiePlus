@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.Calendar;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -42,13 +43,11 @@ public class TopUI implements ActionListener, UI_Panel {
   private JTextArea memoArea;
   private JToolBar goalBar, taskBar;
   private JButton addButtonLeft, removeButtonLeft, selectButtonLeft,
-      addButtonMid, removeButtonMid, selectButtonMid;
+      addButtonMid, removeButtonMid, selectButtonMid, sortDailyTasks;
   private JButton sortLHighToLow, sortLLowToHigh;
 
   // top ui constants for border and view port area
   private static final int BORDER_STROKE = 2;
-  private static final int FIELD_COL = 100;
-  private static final int FIELD_ROW = 4;
 
   // appearance constants
   private static final int SLOT_WIDTH = 200;
@@ -68,6 +67,7 @@ public class TopUI implements ActionListener, UI_Panel {
   private static final String SELECT_TASKS = "select all tasks";
   private static final String HIGH_LOW = "SORT HIGH TO LOW";
   private static final String LOW_HIGH = "SORT LOW TO HIGH";
+  private static final String SORT_TASKS = "SORT TASK";
   
   // boolean for keeping track of selection status (selectAll button)
   private boolean selectAllGoals, selectAllTasks;
@@ -118,6 +118,7 @@ public class TopUI implements ActionListener, UI_Panel {
     selectButtonLeft.setActionCommand(SELECT_GOALS);
     sortLHighToLow = new JButton("Sort: ^");
     sortLLowToHigh = new JButton("Sort: v");
+    sortDailyTasks = new JButton("Sort");
     
     /*------------------------TASKS---------------------------*/
     taskBar = new JToolBar();
@@ -138,10 +139,12 @@ public class TopUI implements ActionListener, UI_Panel {
     selectButtonMid.addActionListener(this);
     
     /*----------- sort button event handling ------------------------*/
-    sortLHighToLow.addActionListener(new SortGoals());
+    sortLHighToLow.addActionListener(new SortBoxes());
     sortLHighToLow.setActionCommand(HIGH_LOW);
-    sortLLowToHigh.addActionListener(new SortGoals());
+    sortLLowToHigh.addActionListener(new SortBoxes());
     sortLLowToHigh.setActionCommand(LOW_HIGH);
+    sortDailyTasks.addActionListener(new SortTasks());
+    sortDailyTasks.setActionCommand(SORT_TASKS);
 
     /*----------- labels for panels and the corresponding text fields-------*/
     shortGoals = new JLabel("  Today's Goals: ");
@@ -186,7 +189,7 @@ public class TopUI implements ActionListener, UI_Panel {
     container.addToolBars(topLPanel, addButtonLeft, removeButtonLeft,
         selectButtonLeft, sortLHighToLow, sortLLowToHigh, goalBar);
     container.addToolBars(topMPanel, addButtonMid, removeButtonMid,
-        selectButtonMid, null, null, taskBar);
+        selectButtonMid, sortDailyTasks, null, taskBar);
     
     /*---------------- add components to top panels ----------------------*/
     topLPanel.add(shortGoals,BorderLayout.NORTH);
@@ -216,7 +219,10 @@ public class TopUI implements ActionListener, UI_Panel {
     container.setComponentColor(taskBar, TOP_GRAYSCALE);
     
     container.add(topPanel,BorderLayout.NORTH);
-    
+
+    /*---------------LOAD TODAY'S TASKS)-------------*/
+    this.loadTodayGoals(container.getLeftUI().getAllTasks());
+
   }
 
   /**
@@ -232,7 +238,8 @@ public class TopUI implements ActionListener, UI_Panel {
     /*----------------------ADDING--------------------------*/
 
     if (e.getActionCommand().equals(ADD_GOAL)) {
-      addBoxTextArea(goalField);
+      new BoxTextArea(goalField, this);
+      goalField.revalidate();
     }
 
     if (e.getActionCommand().equals(ADD_TASK)) {
@@ -244,11 +251,11 @@ public class TopUI implements ActionListener, UI_Panel {
     /*-----------------------REMOVING----------------------*/
 
     if (e.getActionCommand().equals(REMOVE_GOAL)) {
-      removeBoxTextArea(goalField);
+      removeBox(goalField);
     }
 
     if (e.getActionCommand().equals(REMOVE_TASK)) {
-      removeBoxTextArea(taskField);
+      removeBox(taskField);
     }
 
     /*-----------------------SELECTING----------------------*/
@@ -259,7 +266,7 @@ public class TopUI implements ActionListener, UI_Panel {
     }
 
     if (e.getActionCommand().equals(SELECT_TASKS)) {
-      selectAllBox(taskField, selectAllTasks = !selectAllTasks);
+      selectDailyTask(taskField, selectAllTasks = !selectAllTasks);
       setSelection(taskField, selectAllTasks);
     }
 
@@ -274,7 +281,7 @@ public class TopUI implements ActionListener, UI_Panel {
    * @since 2017-07-05
    * @version 0.1
    */
-  private class SortGoals implements ActionListener {
+  private class SortBoxes implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -282,17 +289,20 @@ public class TopUI implements ActionListener, UI_Panel {
     }
 
   }
-  
-  /**
-   * add a BoxTextArea to a specified panel
-   * 
-   * @param targetPanel:
-   *          the destination panel
-   */
-  private void addBoxTextArea(JPanel targetPanel) {
 
-    new BoxTextArea(targetPanel, this);
-    targetPanel.revalidate();
+  /**
+   * Sorting all the daily tasks (event handling for sort button)
+   * 
+   * @author Shanfeng Feng
+   * @since 2017-07-05
+   * @version 0.1
+   */
+  private class SortTasks implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      sortBox(e, taskField);
+    }
 
   }
 
@@ -302,28 +312,38 @@ public class TopUI implements ActionListener, UI_Panel {
    * @param targetPanel:
    *          the panel that holds the BoxTextArea to be removed
    */
-  private void removeBoxTextArea(JPanel targetPanel) {
+  private void removeBox(JPanel targetPanel) {
 
-    // remove all the selected boxes
-    for (int i = targetPanel.getComponents().length - 1; i >= 0; i--) {
+    // remove all the selected BoxTextArea
+    if (targetPanel == goalField) {
+      for (int i = targetPanel.getComponents().length - 1; i >= 0; i--) {
 
-      if (((BoxTextArea) targetPanel.getComponent(i)).isSelected()) {
-        targetPanel.remove(i);
-        targetPanel.revalidate();
+        if (((BoxTextArea) targetPanel.getComponent(i)).isSelected()) {
+          targetPanel.remove(i);
+          targetPanel.revalidate();
+        }
+
       }
 
+      if (targetPanel.getComponentCount() == 0) {
+        toggleSelectButton(selectButtonLeft, selectAllGoals = false);
+      }
     }
 
-    // set selection button back to select all = false if there are no boxes
-    // left
-    if (targetPanel.getComponentCount() == 0) {
+    // remove all the selected daily tasks
+    if (targetPanel == taskField) {
+      for (int i = targetPanel.getComponents().length - 1; i >= 0; i--) {
 
-      if (targetPanel == goalField) {
-        toggleSelectButton(selectButtonLeft, selectAllGoals = false);
-      } else if (targetPanel == taskField) {
-        toggleSelectButton(selectButtonMid, selectAllTasks = false);
+        if (((DailyTaskBox) targetPanel.getComponent(i)).isSelected()) {
+          targetPanel.remove(i);
+          targetPanel.revalidate();
+        }
+
       }
 
+      if (targetPanel.getComponentCount() == 0) {
+        toggleSelectButton(selectButtonMid, selectAllTasks = false);
+      }
     }
 
     // since last validate doesn't not show real time visual update, needs
@@ -346,6 +366,21 @@ public class TopUI implements ActionListener, UI_Panel {
       ((BoxTextArea) (targetPanel.getComponent(i))).setSelected(selectStatus);
     }
 
+  }
+
+  /**
+   * Select / deselect all the DailyTaskBox objects in a specified panel
+   * 
+   * @param targetPanel:
+   *          the panel that's being act upon
+   * @param selectStatus:
+   *          tells if this function is a select or deselect call
+   */
+  private void selectDailyTask(JPanel targetPanel, boolean selectStatus) {
+
+    for (int i = 0; i < targetPanel.getComponentCount(); i++) {
+      ((DailyTaskBox) (targetPanel.getComponent(i))).setSelected(selectStatus);
+    }
 
   }
 
@@ -370,6 +405,9 @@ public class TopUI implements ActionListener, UI_Panel {
     // sort base on low to high priority
     else if (e.getActionCommand() == LOW_HIGH) {
       Arrays.sort(boxArray, new BoxReverseComparator());
+    }
+    else if (e.getActionCommand() == SORT_TASKS) {
+      Arrays.sort(boxArray, new DailyTaskComparator());
     }
 
     // remove all the boxes
@@ -426,6 +464,31 @@ public class TopUI implements ActionListener, UI_Panel {
       targetButton.setText("Deselect All");
     } else {
       targetButton.setText("Select All");
+    }
+
+  }
+
+  /**
+   * Load all of today's Tasks
+   */
+  private void loadTodayGoals(Object[] goals) {
+
+    Calendar tempCalendar = Calendar.getInstance();
+    int realYear = tempCalendar.get(Calendar.YEAR);
+    int realMonth = tempCalendar.get(Calendar.MONTH);
+    int realDay = tempCalendar.get(Calendar.DATE);
+
+    for (int i = 0; i < goals.length; i++) {
+
+      tempCalendar.setTime(((BoxTextArea) goals[i]).getFullDate());
+
+      if (tempCalendar.get(Calendar.YEAR) == realYear
+          && tempCalendar.get(Calendar.MONTH) == realMonth
+          && tempCalendar.get(Calendar.DATE) == realDay) {
+
+        new BoxTextArea(((BoxTextArea) goals[i]), goalField, this);
+
+      }
     }
 
   }

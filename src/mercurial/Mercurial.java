@@ -46,8 +46,8 @@ public class Mercurial extends JFrame{
     this.setSize(this.getPreferredSize());
     this.setTitle("Mercurial");
     this.getContentPane().setBackground(Color.DARK_GRAY);
-    this.setTopUI();
     this.setLeftUI();
+    this.setTopUI();
     this.setCalendar();
     this.validate();
     
