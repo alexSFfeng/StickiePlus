@@ -120,8 +120,10 @@ public class Mercurial extends JFrame{
    *          the remove button
    * @param selectAll:
    *          button to select all the boxes
-   * @param sort:
-   *          the sort menu (optional)
+   * @param sortHL:
+   *          task priority high to low (Optional: use NULL if no sort)
+   * @param sortLH:
+   *          task priority low to high (Optional: use NULL if no sort)
    * @param toolbar:
    *          the toolbar containing the buttons and menu
    */
@@ -132,8 +134,17 @@ public class Mercurial extends JFrame{
     toolbar.add(addB);
     toolbar.add(removeB);
     toolbar.add(selectAll);
-    toolbar.add(sortHL);
-    toolbar.add(sortLH);
+
+    if (sortHL != null) {
+      toolbar.add(sortHL);
+      sortHL.setBorderPainted(false);
+
+    }
+    if (sortLH != null) {
+      toolbar.add(sortLH);
+      sortLH.setBorderPainted(false);
+    }
+
     toolbar.setFloatable(false);
     panel.add(toolbar,BorderLayout.SOUTH);
     
@@ -146,8 +157,6 @@ public class Mercurial extends JFrame{
     addB.setFont(buttonFont);
     removeB.setBorderPainted(false);
     selectAll.setBorderPainted(false);
-    sortHL.setBorderPainted(false);
-    sortLH.setBorderPainted(false);
   
   }
   

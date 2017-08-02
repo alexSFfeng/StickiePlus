@@ -262,15 +262,25 @@ public class MainCalendar extends JPanel {
 
     // doublic click cell to display all task on that day
     calendarTable.addMouseListener(new MouseAdapter() {
+
+      // mouse clicked twice triggers event
+      // (mousePressed cuz mouse click is on 1 same pixel)
       public void mousePressed(MouseEvent e) {
+
         if (e.getClickCount() == 2) {
+
+          // obtain the column && row being clicked on
           JTable target = (JTable) e.getSource();
           int row = target.rowAtPoint(e.getPoint());
           int column = target.columnAtPoint(e.getPoint());
+          // get the component renderered in that cell
           Component comp = calendarTable.prepareRenderer(
               calendarTable.getCellRenderer(row, column), row, column);
+
+          // use that component's instances to create the pop up panel
           ((MainCalendarCellRenderer) comp).createPopUp(calendarTable);
         }
+
       }
     });
 

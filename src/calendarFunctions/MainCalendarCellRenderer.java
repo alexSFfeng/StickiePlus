@@ -103,6 +103,11 @@ public class MainCalendarCellRenderer extends JPanel implements TableCellRendere
 
     // obtaining all the tasks created by user
     Object[] taskArray = refUI.getAllTasks();
+    dayLabel = new JLabel();
+    taskPanel = new JPanel();
+    newWindow = new JFrame();
+    displayPanel = new JPanel();
+    displayPane = new JScrollPane(displayPanel);
 
     /*----------------- selection / deselection colors --------------------*/
     if (selected) {
@@ -127,20 +132,17 @@ public class MainCalendarCellRenderer extends JPanel implements TableCellRendere
     if (value != null) {
 
       // label for the day of the month
-      dayLabel = new JLabel(String.valueOf(value));
+      dayLabel.setText(String.valueOf(value));
 
       // panel that stores all the tasks on that day (short description)
-      taskPanel = new JPanel();
       taskPanel.setLayout(new BoxLayout(taskPanel, BoxLayout.Y_AXIS));
       taskPanel.setBackground(this.getBackground());
 
       // The pop up window components for displaying the detailed tasks
       newCalendar.set(Calendar.DATE, (Integer) value);
-      newWindow = new JFrame("Task on "
+      newWindow.setTitle("Task on "
           + new SimpleDateFormat("yyyy-MM-dd").format(newCalendar.getTime()));
-      displayPanel = new JPanel();
       displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.X_AXIS));
-      displayPane = new JScrollPane(displayPanel);
 
       // search the Array for tasks that should be put into this date cell
       for (int i = 0; i < taskArray.length; i++) {
@@ -227,6 +229,7 @@ public class MainCalendarCellRenderer extends JPanel implements TableCellRendere
    */
   private void setUpDisplayPanel(BoxTextArea task) {
 
+    // getting the task text into the container
     JTextArea taskClone;
     if (task.getTextRep().length() != 0) {
       taskClone = new JTextArea(task.getTextRep());
@@ -248,7 +251,15 @@ public class MainCalendarCellRenderer extends JPanel implements TableCellRendere
 
   }
 
+  /**
+   * Create the pop up window that displays all the tasks on THIS day
+   * 
+   * @param table
+   *          - the table that holds the table of days
+   */
   public void createPopUp(JTable table) {
+
+    // display the panel of tasks only if there are tasks on that day
     if (displayPanel.getComponentCount() != 0) {
       newWindow.add(displayPane);
       newWindow.setSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));

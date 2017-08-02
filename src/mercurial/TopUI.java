@@ -17,6 +17,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
 /**
@@ -33,17 +34,16 @@ public class TopUI implements ActionListener, UI_Panel {
   private JMenuBar menuBar;
   private JPanel topPanel, topLPanel, topMPanel, topRPanel;
   private JMenu mercurial,file,view,event,goal,setting;
-  private JLabel shortGoals, tasks, pastDues;
+  private JLabel shortGoals, tasks, memo;
 
   // the three top UI tasks container
-  private JPanel goalField, taskField, pastDueField;
-  private JScrollPane goalPane, taskPane, duePane;
-  private JToolBar goalBar, taskBar, dueBar;
+  private JPanel goalField, taskField;
+  private JScrollPane goalPane, taskPane, memoPane;
+  private JTextArea memoArea;
+  private JToolBar goalBar, taskBar;
   private JButton addButtonLeft, removeButtonLeft, selectButtonLeft,
-      addButtonRight, removeButtonRight, selectButtonRight, addButtonMid,
-      removeButtonMid, selectButtonMid;
-  private JButton sortLHighToLow, sortLLowToHigh, sortMHighToLow,
-      sortMLowToHigh, sortRHighToLow, sortRLowToHigh;
+      addButtonMid, removeButtonMid, selectButtonMid;
+  private JButton sortLHighToLow, sortLLowToHigh;
 
   // top ui constants for border and view port area
   private static final int BORDER_STROKE = 2;
@@ -66,14 +66,11 @@ public class TopUI implements ActionListener, UI_Panel {
   private static final String ADD_TASK = "add task boxField";
   private static final String REMOVE_TASK = "remove task boxField";
   private static final String SELECT_TASKS = "select all tasks";
-  private static final String ADD_PASTDUE = "add due boxField";
-  private static final String REMOVE_PASTDUE = "remove due boxField";
-  private static final String SELECT_DUES = "select all dues";
   private static final String HIGH_LOW = "SORT HIGH TO LOW";
   private static final String LOW_HIGH = "SORT LOW TO HIGH";
   
   // boolean for keeping track of selection status (selectAll button)
-  private boolean selectAllGoals, selectAllTasks, selectAllDues;
+  private boolean selectAllGoals, selectAllTasks;
 
   /**
    * Ctor for connecting TOP UI with mainframe
@@ -91,7 +88,7 @@ public class TopUI implements ActionListener, UI_Panel {
     setting = new JMenu("Setting");
     
     // initial selection status is false (select all button hasn't been clicked
-    selectAllGoals = selectAllTasks = selectAllDues = false;
+    selectAllGoals = selectAllTasks = false;
 
     // add related buttons to menuBar
     menuBar.add(mercurial);
@@ -130,30 +127,15 @@ public class TopUI implements ActionListener, UI_Panel {
     removeButtonMid.setActionCommand(REMOVE_TASK);
     selectButtonMid = new JButton("Select All");
     selectButtonMid.setActionCommand(SELECT_TASKS);
-    sortMHighToLow = new JButton("Sort: ^");
-    sortMLowToHigh = new JButton("Sort: v");
-    
-    /*------------------------PAST DUES----------------------*/
-    dueBar = new JToolBar();
-    addButtonRight = new JButton("+");
-    addButtonRight.setActionCommand(ADD_PASTDUE);
-    removeButtonRight = new JButton("-");
-    removeButtonRight.setActionCommand(REMOVE_PASTDUE);
-    selectButtonRight = new JButton("Select All");
-    selectButtonRight.setActionCommand(SELECT_DUES);
-    sortRHighToLow = new JButton("Sort: ^");
-    sortRLowToHigh = new JButton("Sort: v");
+
     
     /*---------- add this UI as listener to the buttons.------------*/
     addButtonLeft.addActionListener(this);
     addButtonMid.addActionListener(this);
-    addButtonRight.addActionListener(this);
     removeButtonLeft.addActionListener(this);
     removeButtonMid.addActionListener(this);
-    removeButtonRight.addActionListener(this);
     selectButtonLeft.addActionListener(this);
     selectButtonMid.addActionListener(this);
-    selectButtonRight.addActionListener(this);
     
     /*----------- sort button event handling ------------------------*/
     sortLHighToLow.addActionListener(new SortGoals());
@@ -161,37 +143,30 @@ public class TopUI implements ActionListener, UI_Panel {
     sortLLowToHigh.addActionListener(new SortGoals());
     sortLLowToHigh.setActionCommand(LOW_HIGH);
 
-    sortRHighToLow.addActionListener(new SortDues());
-    sortRHighToLow.setActionCommand(HIGH_LOW);
-    sortRLowToHigh.addActionListener(new SortDues());
-    sortRLowToHigh.setActionCommand(LOW_HIGH);
-
-    sortMHighToLow.addActionListener(new SortTasks());
-    sortMHighToLow.setActionCommand(HIGH_LOW);
-    sortMLowToHigh.addActionListener(new SortTasks());
-    sortMLowToHigh.setActionCommand(LOW_HIGH);
-
     /*----------- labels for panels and the corresponding text fields-------*/
     shortGoals = new JLabel("  Today's Goals: ");
     tasks = new JLabel("  Daily Tasks: ");
-    pastDues = new JLabel("  Past Dues: ");
+    memo = new JLabel("  Memo/Note:  ");
     container.setHeaderFont(shortGoals);
     container.setHeaderFont(tasks);
-    container.setHeaderFont(pastDues);
+    container.setHeaderFont(memo);
     
     /*----------- Panels for storing tasks and goals ----------------------*/
     goalField = new JPanel();
     taskField = new JPanel();
-    pastDueField = new JPanel();
+    memoArea = new JTextArea();
+
+    memoArea.setWrapStyleWord(true);
+    memoArea.setLineWrap(true);
+
     // layout management
     goalField.setLayout(new BoxLayout(goalField, BoxLayout.Y_AXIS));
     taskField.setLayout(new BoxLayout(taskField, BoxLayout.Y_AXIS));
-    pastDueField.setLayout(new BoxLayout(pastDueField, BoxLayout.Y_AXIS));
 
     /*----------------- scrollable panel -----------------------------*/
     goalPane = new JScrollPane(goalField);
     taskPane = new JScrollPane(taskField);
-    duePane = new JScrollPane(pastDueField);
+    memoPane = new JScrollPane(memoArea);
 
     /*------------------- Panel fixed size---------------------------*/
     topLPanel.setPreferredSize(new Dimension(SLOT_WIDTH, SLOT_HEIGHT));
@@ -204,24 +179,22 @@ public class TopUI implements ActionListener, UI_Panel {
         .setBorder(BorderFactory.createLineBorder(Color.BLACK, BORDER_STROKE));
     taskPane
         .setBorder(BorderFactory.createLineBorder(Color.BLACK, BORDER_STROKE));
-    duePane
+    memoPane
         .setBorder(BorderFactory.createLineBorder(Color.BLACK, BORDER_STROKE));
     
     // add toolbars to each panel
     container.addToolBars(topLPanel, addButtonLeft, removeButtonLeft,
         selectButtonLeft, sortLHighToLow, sortLLowToHigh, goalBar);
     container.addToolBars(topMPanel, addButtonMid, removeButtonMid,
-        selectButtonMid, sortMHighToLow, sortMLowToHigh, taskBar);
-    container.addToolBars(topRPanel, addButtonRight, removeButtonRight,
-        selectButtonRight, sortRHighToLow, sortRLowToHigh, dueBar);
+        selectButtonMid, null, null, taskBar);
     
     /*---------------- add components to top panels ----------------------*/
     topLPanel.add(shortGoals,BorderLayout.NORTH);
     topLPanel.add(goalPane);
     topMPanel.add(tasks,BorderLayout.NORTH);
     topMPanel.add(taskPane);
-    topRPanel.add(pastDues,BorderLayout.NORTH);
-    topRPanel.add(duePane);
+    topRPanel.add(memo, BorderLayout.NORTH);
+    topRPanel.add(memoPane);
     
     
     /*--------------------------- layout paddings------------------------*/
@@ -238,10 +211,9 @@ public class TopUI implements ActionListener, UI_Panel {
     container.setComponentColor(topPanel, TOP_GRAYSCALE);
     container.setComponentColor(goalField, TOP_GRAYSCALE);
     container.setComponentColor(taskField, TOP_GRAYSCALE);
-    container.setComponentColor(pastDueField, TOP_GRAYSCALE);
+    container.setComponentColor(memoPane, TOP_GRAYSCALE);
     container.setComponentColor(goalBar, TOP_GRAYSCALE);
     container.setComponentColor(taskBar, TOP_GRAYSCALE);
-    container.setComponentColor(dueBar, TOP_GRAYSCALE);
     
     container.add(topPanel,BorderLayout.NORTH);
     
@@ -264,11 +236,10 @@ public class TopUI implements ActionListener, UI_Panel {
     }
 
     if (e.getActionCommand().equals(ADD_TASK)) {
-      addBoxTextArea(taskField);
+      new DailyTaskBox(taskField);
+      taskField.revalidate();
     }
-    if (e.getActionCommand().equals(ADD_PASTDUE)) {
-      addBoxTextArea(pastDueField);
-    }
+
 
     /*-----------------------REMOVING----------------------*/
 
@@ -278,10 +249,6 @@ public class TopUI implements ActionListener, UI_Panel {
 
     if (e.getActionCommand().equals(REMOVE_TASK)) {
       removeBoxTextArea(taskField);
-    }
-
-    if (e.getActionCommand().equals(REMOVE_PASTDUE)) {
-      removeBoxTextArea(pastDueField);
     }
 
     /*-----------------------SELECTING----------------------*/
@@ -294,11 +261,6 @@ public class TopUI implements ActionListener, UI_Panel {
     if (e.getActionCommand().equals(SELECT_TASKS)) {
       selectAllBox(taskField, selectAllTasks = !selectAllTasks);
       setSelection(taskField, selectAllTasks);
-    }
-
-    if (e.getActionCommand().equals(SELECT_DUES)) {
-      selectAllBox(pastDueField, selectAllDues = !selectAllDues);
-      setSelection(pastDueField, selectAllDues);
     }
 
   }
@@ -317,38 +279,6 @@ public class TopUI implements ActionListener, UI_Panel {
     @Override
     public void actionPerformed(ActionEvent e) {
       sortBox(e, goalField);
-    }
-
-  }
-
-  /**
-   * Sorting all the today's tasks (event handling for sort button)
-   * 
-   * @author Shanfeng Feng
-   * @since 2017-07-05
-   * @version 0.1
-   */
-  private class SortTasks implements ActionListener {
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      sortBox(e, taskField);
-    }
-
-  }
-
-  /**
-   * Sorting all the past dues (event handling for sort button)
-   * 
-   * @author Shanfeng Feng
-   * @since 2017-07-05
-   * @version 0.1
-   */
-  private class SortDues implements ActionListener {
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      sortBox(e, pastDueField);
     }
 
   }
@@ -392,8 +322,6 @@ public class TopUI implements ActionListener, UI_Panel {
         toggleSelectButton(selectButtonLeft, selectAllGoals = false);
       } else if (targetPanel == taskField) {
         toggleSelectButton(selectButtonMid, selectAllTasks = false);
-      } else {
-        toggleSelectButton(selectButtonRight, selectAllDues = false);
       }
 
     }
@@ -468,9 +396,6 @@ public class TopUI implements ActionListener, UI_Panel {
       } else if (containerPanel == taskField) {
         selectAllTasks = selectionMode;
         toggleSelectButton(selectButtonMid, selectionMode);
-      } else {
-        selectAllDues = selectionMode;
-        toggleSelectButton(selectButtonRight, selectionMode);
       }
 
     }
@@ -484,18 +409,7 @@ public class TopUI implements ActionListener, UI_Panel {
    * @return a boolean that tells the select button status of the specified
    *         panel
    */
-  @Override
-  public boolean getSelection(JPanel containerPanel) {
 
-    if (containerPanel == goalField) {
-      return selectAllGoals;
-    } else if (containerPanel == taskField) {
-      return selectAllTasks;
-    } else {
-      return selectAllDues;
-    }
-
-  }
 
   /**
    * Toggles the text display for the select All button (select all or deselect
