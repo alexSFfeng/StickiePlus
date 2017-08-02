@@ -22,12 +22,5 @@ public interface UI_Panel {
    */
   public void setSelection(JPanel containerPanel, boolean selectionMode);
 
-  /**
-   * receive the current selection mode of a panel that holds BoxTextArea
-   * 
-   * @param containerPanel:
-   *          the panel that holds BoxTextArea objects
-   * @return the selection mode of that panel
-   */
-  public boolean getSelection(JPanel containerPanel);
+
 }

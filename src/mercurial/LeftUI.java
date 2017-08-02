@@ -320,20 +320,6 @@ public class LeftUI implements UI_Panel {
   }
 
   /**
-   * receive the current selection mode of a panel that holds BoxTextArea
-   * 
-   * @param containerPanel:
-   *          the panel that holds BoxTextArea objects
-   * @return the selection mode of that panel
-   */
-  @Override
-  public boolean getSelection(JPanel containerPanel) {
-
-    return selectedAll;
-
-  }
-
-  /**
    * Return an array of all the tasks in the leftUI containerPanel
    * 
    * @return the array of assigned tasks
