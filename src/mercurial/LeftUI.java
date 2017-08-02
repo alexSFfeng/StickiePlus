@@ -58,7 +58,7 @@ public class LeftUI implements UI_Panel {
     leftPanelBotTop = new JPanel();
     leftPanelBotTop.setLayout(new BoxLayout(leftPanelBotTop, BoxLayout.Y_AXIS));
     leftScroll = new JScrollPane(leftPanelBotTop);
-    myProductivity = new JLabel("Priority Tasks/Reminders: ");
+    myProductivity = new JLabel("Future Goals and Tasks:   ");
     frame.setHeaderFont(myProductivity);
     
     // initial selection status is false (selectAll button hasn't been clicked)
