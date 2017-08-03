@@ -5,6 +5,12 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.util.Arrays;
 
 import javax.swing.BorderFactory;
@@ -42,6 +48,8 @@ public class LeftUI implements UI_Panel {
   private static final int LEFT_GRAYSCALE = 91;
   private static final int BORDER_PADDING = 10;
   
+
+
   /**
    * Ctor for initializing the Left user interface and adding it to the main
    * frame
@@ -101,6 +109,8 @@ public class LeftUI implements UI_Panel {
     selectButton.addActionListener(new SelectButton());
     sortHighToLow.addActionListener(new SortHighToLow());
     sortLowToHigh.addActionListener(new SortLowToHigh());
+
+    this.loadState();
 
   }
 
@@ -329,4 +339,49 @@ public class LeftUI implements UI_Panel {
     return leftPanelBotTop.getComponents();
 
   }
+
+  @Override
+  public void saveState() {
+
+    try {
+      PrintWriter pw = new PrintWriter("leftUIBoxes.ser");
+      pw.close();
+      FileOutputStream fileOut = new FileOutputStream("leftUIBoxes.ser");
+      ObjectOutputStream objOut = new ObjectOutputStream(fileOut);
+      objOut.writeObject(leftPanelBotTop.getComponents());
+      objOut.close();
+      fileOut.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+  }
+
+  @Override
+  public void loadState() {
+
+    Object[] prevBoxes;
+    try {
+
+      FileInputStream fileIn = new FileInputStream("leftUIBoxes.ser");
+      ObjectInputStream objIn = new ObjectInputStream(fileIn);
+      prevBoxes = (Object[]) objIn.readObject();
+      objIn.close();
+      fileIn.close();
+
+      for (int i = 0; prevBoxes != null && i < prevBoxes.length; i++) {
+        leftPanelBotTop.add((BoxTextArea) prevBoxes[i]);
+      }
+
+    } catch (IOException e) {
+      e.printStackTrace();
+      return;
+    } catch (ClassNotFoundException c) {
+      System.err.println("Class type error");
+      c.printStackTrace();
+      return;
+    }
+
+  }
+
 }

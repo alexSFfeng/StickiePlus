@@ -23,4 +23,13 @@ public interface UI_Panel {
   public void setSelection(JPanel containerPanel, boolean selectionMode);
 
 
+  /**
+   * Save the state of the UI before closing the program
+   */
+  public void saveState();
+
+  /**
+   * Load the state of the UI before last exit
+   */
+  public void loadState();
 }

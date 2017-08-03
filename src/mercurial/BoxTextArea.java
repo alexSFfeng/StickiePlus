@@ -16,14 +16,14 @@ import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.toedter.calendar.JDateChooser;
+import calendarFunctions.JDatePicker;
 
 /**
  * check boxes that holds goal, task, and pastDue informations A check box
  * should have a text area (scrollable) next to it Under it should be a slider
  * from 1 - 10 for priority level.
  * 
- * Credits to Kai Toedter's work on JCalendar and JDateChooser (Date selection
+ * Credits to Kai Toedter's work on JCalendar and JDatePicker (Date selection
  * functionality implemented by using the JCalendar library created by Toedter)
  * 
  * @author Shanfeng Feng
@@ -34,6 +34,11 @@ import com.toedter.calendar.JDateChooser;
 public class BoxTextArea extends JPanel
     implements ItemListener, ChangeListener {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 5439226119561384681L;
+  
   // components of a boxTextArea
   private JTextArea editable;
   private JCheckBox checkbox;
@@ -43,10 +48,10 @@ public class BoxTextArea extends JPanel
   // due date component group
   private JPanel duePanel;
   private JLabel dueSign;
-  private JDateChooser dueDatePicker;
+  private JDatePicker dueDatePicker;
 
   // the UI_Panel that this BoxTextArea object belongs to
-  private UI_Panel refPanel;
+  private transient UI_Panel refPanel;
 
   // determines whether or not this box is selected
   private boolean selected;
@@ -127,7 +132,7 @@ public class BoxTextArea extends JPanel
     prioritySlider = new JSlider(MIN_PRIORITY, MAX_PRIORITY);
 
     // due date component initialization
-    dueDatePicker = new JDateChooser();
+    dueDatePicker = new JDatePicker();
     dueSign = new JLabel("Due on");
     dueSign.setForeground(Color.red);
     duePanel = new JPanel(new BorderLayout());
