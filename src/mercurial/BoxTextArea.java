@@ -16,7 +16,7 @@ import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.toedter.calendar.JDateChooser;
+import calendarFunctions.JDateChooser;
 
 /**
  * check boxes that holds goal, task, and pastDue informations A check box
@@ -34,6 +34,11 @@ import com.toedter.calendar.JDateChooser;
 public class BoxTextArea extends JPanel
     implements ItemListener, ChangeListener {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 5439226119561384681L;
+  
   // components of a boxTextArea
   private JTextArea editable;
   private JCheckBox checkbox;
@@ -46,7 +51,7 @@ public class BoxTextArea extends JPanel
   private JDateChooser dueDatePicker;
 
   // the UI_Panel that this BoxTextArea object belongs to
-  private UI_Panel refPanel;
+  private transient UI_Panel refPanel;
 
   // determines whether or not this box is selected
   private boolean selected;

@@ -7,6 +7,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.Serializable;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -22,8 +23,13 @@ import javax.swing.JTextField;
  * @since 2017-08-01
  */
 public class DailyTaskBox extends JPanel
-    implements FocusListener, ItemListener {
+    implements FocusListener, ItemListener, Serializable {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -837945227972515380L;
+  
   // components that makes up this box object
   private JCheckBox checkBox;
   private JTextField taskField;

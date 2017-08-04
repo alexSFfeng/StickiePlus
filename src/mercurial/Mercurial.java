@@ -6,6 +6,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -52,13 +54,13 @@ public class Mercurial extends JFrame{
     this.validate();
     
     // try to match system look and feel ui
-    try {
+  /*  try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     } catch (ClassNotFoundException e) {
     } catch (InstantiationException e) {
     } catch (IllegalAccessException e) {
     } catch (UnsupportedLookAndFeelException e) {
-    }
+    }   */
 
     this.setVisible(true);
   }
@@ -206,6 +208,13 @@ public class Mercurial extends JFrame{
     Mercurial myApp = new Mercurial();
     myApp.setDefaultCloseOperation(EXIT_ON_CLOSE);
     myApp.displayUI();
+    myApp.addWindowListener(new WindowAdapter() {
+
+      @Override
+      public void windowClosing(WindowEvent e) {
+        leftUI.saveState();
+      }
+    });
     
   }
   

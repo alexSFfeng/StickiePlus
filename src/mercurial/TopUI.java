@@ -493,4 +493,16 @@ public class TopUI implements ActionListener, UI_Panel {
 
   }
 
+  @Override
+  public void saveState() {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void loadState() {
+    // TODO Auto-generated method stub
+
+  }
+
 }
