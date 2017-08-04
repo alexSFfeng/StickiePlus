@@ -480,7 +480,6 @@ public class TopUI implements ActionListener, UI_Panel {
 
     for (int i = 0; i < goals.length; i++) {
 
-      System.out.println(((BoxTextArea) goals[i]) == null);
       tempCalendar.setTime(((BoxTextArea) goals[i]).getFullDate());
 
       if (tempCalendar.get(Calendar.YEAR) == realYear

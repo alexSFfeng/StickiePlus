@@ -27,6 +27,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
@@ -56,25 +60,25 @@ import com.toedter.calendar.JCalendar;
  * @version $LastChangedDate: 2011-06-07 19:05:02 +0200 (Di, 07 Jun 2011) $
  */
 public class JDateChooser extends JPanel implements ActionListener,
-		PropertyChangeListener {
+    PropertyChangeListener, Serializable {
 
 	private static final long serialVersionUID = -4306412745720670722L;
 
-  protected transient IDateEditor dateEditor;
+  protected IDateEditor dateEditor;
 
   protected JButton calendarButton;
 
-  protected transient JCalendar jcalendar;
+  protected JCalendar jcalendar;
 
-  protected transient JPopupMenu popup;
+  protected JPopupMenu popup;
 
 	protected boolean isInitialized;
 
 	protected boolean dateSelected;
 
-	protected Date lastSelectedDate;
+  protected Date lastSelectedDate;
 
-  private transient ChangeListener changeListener;
+  private ChangeListener changeListener;
 
 	/**
 	 * Creates a new JDateChooser. By default, no date is set and the textfield
@@ -304,12 +308,15 @@ public class JDateChooser extends JPanel implements ActionListener,
 	 *            the event
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {
+	  
 		if (evt.getPropertyName().equals("day")) {
+
 			if (popup.isVisible()) {
 				dateSelected = true;
 				popup.setVisible(false);
 				if (((Integer)evt.getNewValue()).intValue() > 0) {
 					setDate(jcalendar.getCalendar().getTime());
+          
 				} else {
 					setDate(null);
 				}
@@ -327,11 +334,11 @@ public class JDateChooser extends JPanel implements ActionListener,
 	 * Updates the UI of itself and the popup.
 	 */
 	public void updateUI() {
-    if (this.dateEditor != null)
 		super.updateUI();
 		setEnabled(isEnabled());
 
 		if (jcalendar != null) {
+
 			SwingUtilities.updateComponentTreeUI(popup);
 		}
 	}
@@ -389,8 +396,11 @@ public class JDateChooser extends JPanel implements ActionListener,
 	 */
 	public void setDate(Date date) {
 		dateEditor.setDate(date);
+
+
 		if (getParent() != null) {
-			getParent().invalidate();
+
+      getParent().invalidate();
 		}
 	}
 
@@ -563,4 +573,141 @@ public class JDateChooser extends JPanel implements ActionListener,
 		return super.requestFocusInWindow();
 	}
 
+  /*----------------------------CUSTOMIZATION MADE BY Shanfeng Feng--------------*/
+  /*--------------------------FOR SUPPORTING SERIALIZATION-----------------------*/
+
+  /**
+   * Reinitialize the Object one more time during deserialization - code almost
+   * the same as constructor
+   * 
+   * @param prevDate:
+   *          the Date that was last selected by user
+   */
+  private void reInitialize(Date prevDate) {
+
+    this.removeAll();
+
+    this.dateEditor = new JTextFieldDateEditor();
+    this.dateEditor.addPropertyChangeListener("date", this);
+
+    jcalendar = new JCalendar();
+    jcalendar.setDate(prevDate);
+    setLayout(new BorderLayout());
+
+    jcalendar.getDayChooser().addPropertyChangeListener("day", this);
+    // always fire"day" property even if the user selects
+    // the already selected day again
+    jcalendar.getDayChooser().setAlwaysFireDayProperty(true);
+
+    setDateFormatString(null);
+    setDate(prevDate);
+
+    // Display a calendar button with an icon
+    URL iconURL = getClass()
+        .getResource("/com/toedter/calendar/images/JDateChooserIcon.gif");
+    ImageIcon icon = new ImageIcon(iconURL);
+
+    calendarButton = new JButton(icon) {
+      private static final long serialVersionUID = -1913767779079949668L;
+
+      public boolean isFocusable() {
+        return false;
+      }
+    };
+    calendarButton.setMargin(new Insets(0, 0, 0, 0));
+    calendarButton.addActionListener(this);
+
+    // Alt + 'C' selects the calendar.
+    calendarButton.setMnemonic(KeyEvent.VK_C);
+
+    add(calendarButton, BorderLayout.EAST);
+    add(this.dateEditor.getUiComponent(), BorderLayout.CENTER);
+
+    calendarButton.setMargin(new Insets(0, 0, 0, 0));
+    // calendarButton.addFocusListener(this);
+
+    popup = new JPopupMenu() {
+      private static final long serialVersionUID = -6078272560337577761L;
+
+      public void setVisible(boolean b) {
+        Boolean isCanceled = (Boolean) getClientProperty(
+            "JPopupMenu.firePopupMenuCanceled");
+        if (b || (!b && dateSelected)
+            || ((isCanceled != null) && !b && isCanceled.booleanValue())) {
+          super.setVisible(b);
+        }
+      }
+    };
+
+    popup.setLightWeightPopupEnabled(true);
+
+    popup.add(jcalendar);
+
+    lastSelectedDate = prevDate;
+
+    // Corrects a problem that occurred when the JMonthChooser's combobox is
+    // displayed, and a click outside the popup does not close it.
+
+    // The following idea was originally provided by forum user
+    // podiatanapraia:
+    changeListener = new ChangeListener() {
+      boolean hasListened = false;
+
+      public void stateChanged(ChangeEvent e) {
+        if (hasListened) {
+          hasListened = false;
+          return;
+        }
+        if (popup.isVisible() && JDateChooser.this.jcalendar.getMonthChooser()
+            .getComboBox().hasFocus()) {
+          MenuElement[] me = MenuSelectionManager.defaultManager()
+              .getSelectedPath();
+          MenuElement[] newMe = new MenuElement[me.length + 1];
+          newMe[0] = popup;
+          for (int i = 0; i < me.length; i++) {
+            newMe[i + 1] = me[i];
+          }
+          hasListened = true;
+          MenuSelectionManager.defaultManager().setSelectedPath(newMe);
+        }
+      }
+    };
+    
+    MenuSelectionManager.defaultManager().addChangeListener(changeListener);
+    // end of code provided by forum user podiatanapraia
+
+    isInitialized = true;
+  }
+
+  /**
+   * Custom serialization: only writes in the corresponding lastSelectedDate
+   * 
+   * @param out:
+   *          the outputstream that is responsible for writing
+   * @throws IOException
+   */
+  private void writeObject(ObjectOutputStream out) throws IOException {
+
+    out.writeObject(jcalendar.getDate());
+
+  }
+
+  /**
+   * Custom deserialization: reInitialize all the instances using the previously
+   * saved date
+   * 
+   * @param in:
+   *          the inputstream for reading previously saved dates
+   * @throws IOException
+   */
+  private void readObject(ObjectInputStream in) throws IOException {
+    try {
+
+      reInitialize((Date) in.readObject());
+
+
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    }
+  }
 }

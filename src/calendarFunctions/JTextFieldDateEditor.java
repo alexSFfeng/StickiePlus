@@ -34,7 +34,6 @@ import java.util.Locale;
 
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.event.CaretEvent;
@@ -445,18 +444,4 @@ public class JTextFieldDateEditor extends JFormattedTextField implements IDateEd
 		checkText();
 	}
 
-	/**
-	 * Creates a JFrame with a JCalendar inside and can be used for testing.
-	 * 
-	 * @param s
-	 *            The command line arguments
-	 */
-	public static void main(String[] s) {
-		JFrame frame = new JFrame("JTextFieldDateEditor");
-		JTextFieldDateEditor jTextFieldDateEditor = new JTextFieldDateEditor();
-		jTextFieldDateEditor.setDate(new Date());
-		frame.getContentPane().add(jTextFieldDateEditor);
-		frame.pack();
-		frame.setVisible(true);
-	}
 }
