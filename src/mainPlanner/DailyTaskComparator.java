@@ -1,4 +1,4 @@
-package mercurial;
+package mainPlanner;
 
 import java.util.Comparator;
 

@@ -19,8 +19,8 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.table.TableCellRenderer;
 
-import mercurial.BoxTextArea;
-import mercurial.LeftUI;
+import mainPlanner.BoxTextArea;
+import mainPlanner.LeftUI;
 
 /**
  * Renderer for main calendar cell display. Each cell will have a label for the

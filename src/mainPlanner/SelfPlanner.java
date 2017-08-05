@@ -1,4 +1,4 @@
-package mercurial;
+package mainPlanner;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -46,7 +46,7 @@ public class SelfPlanner extends JFrame{
     
     this.setPreferredSize(new Dimension(FRAME_WIDTH,FRAME_HEIGHT));
     this.setSize(this.getPreferredSize());
-    this.setTitle("Mercurial");
+    this.setTitle("SelfPlanner");
     this.getContentPane().setBackground(Color.DARK_GRAY);
     this.setLeftUI();
     this.setTopUI();

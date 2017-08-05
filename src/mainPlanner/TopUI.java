@@ -1,4 +1,4 @@
-package mercurial;
+package mainPlanner;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -510,8 +510,20 @@ public class TopUI implements ActionListener, UI_Panel {
       File topUiDateFile = new File("topUIBoxes.ser");
       FileOutputStream fileOut = new FileOutputStream(topUiDateFile, false);
       ObjectOutputStream objOut = new ObjectOutputStream(fileOut);
-      objOut.writeObject(taskField.getComponents());
+      int numTasks = taskField.getComponentCount();
+      Object[] taskBoxes = taskField.getComponents();
+      Integer[] timeId = new Integer[numTasks];
+      String[] taskText = new String[numTasks];
+
+      for (int i = 0; i < numTasks; i++) {
+        timeId[i] = ((DailyTaskBox) taskBoxes[i]).getOrderId();
+        taskText[i] = ((DailyTaskBox) taskBoxes[i]).getTaskText();
+      }
+
+      objOut.writeObject(timeId);
+      objOut.writeObject(taskText);
       objOut.writeObject(memoArea.getText());
+
       objOut.close();
       fileOut.close();
     } catch (IOException e) {
@@ -523,19 +535,27 @@ public class TopUI implements ActionListener, UI_Panel {
   @Override
   public void loadState() {
 
-    Object[] prevBoxes = null;
+    Object[] boxesTime = null;
+    Object[] boxesText = null;
+
     try {
 
       FileInputStream fileIn = new FileInputStream("topUIBoxes.ser");
       ObjectInputStream objIn = new ObjectInputStream(fileIn);
-      prevBoxes = (Object[]) objIn.readObject();
+      boxesTime = (Object[]) objIn.readObject();
+      boxesText = (Object[]) objIn.readObject();
+
+      for (int i = 0; boxesTime != null && boxesText != null
+          && i < boxesTime.length; i++) {
+
+        new DailyTaskBox(taskField, (String) boxesText[i], (int) boxesTime[i]);
+
+      }
+
       this.memoArea.append((String) objIn.readObject());
       objIn.close();
       fileIn.close();
 
-      for (int i = 0; prevBoxes != null && i < prevBoxes.length; i++) {
-        taskField.add((DailyTaskBox) prevBoxes[i]);
-      }
 
     } catch (FileNotFoundException e) {
       // normal, first time opening

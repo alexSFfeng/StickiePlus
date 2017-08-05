@@ -1,4 +1,4 @@
-package mercurial;
+package mainPlanner;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -367,7 +367,7 @@ public class LeftUI implements UI_Panel {
   @Override
   public void loadState() {
 
-    Object[] prevBoxes;
+    Object[] prevBoxes = null;
     try {
 
       FileInputStream fileIn = new FileInputStream("leftUIBoxes.ser");

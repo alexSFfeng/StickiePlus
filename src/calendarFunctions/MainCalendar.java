@@ -22,7 +22,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import mercurial.SelfPlanner;
+import mainPlanner.SelfPlanner;
 
 
 /**
