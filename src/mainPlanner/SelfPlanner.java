@@ -1,4 +1,4 @@
-package mercurial;
+package mainPlanner;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -29,7 +29,7 @@ import calendarFunctions.MainCalendar;
  */
 
 
-public class Mercurial extends JFrame{
+public class SelfPlanner extends JFrame{
 
   // default frame status
   //private JFrame mainFrame;
@@ -46,7 +46,7 @@ public class Mercurial extends JFrame{
     
     this.setPreferredSize(new Dimension(FRAME_WIDTH,FRAME_HEIGHT));
     this.setSize(this.getPreferredSize());
-    this.setTitle("Mercurial");
+    this.setTitle("SelfPlanner");
     this.getContentPane().setBackground(Color.DARK_GRAY);
     this.setLeftUI();
     this.setTopUI();
@@ -54,13 +54,13 @@ public class Mercurial extends JFrame{
     this.validate();
     
     // try to match system look and feel ui
-  /*  try {
+    try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     } catch (ClassNotFoundException e) {
     } catch (InstantiationException e) {
     } catch (IllegalAccessException e) {
     } catch (UnsupportedLookAndFeelException e) {
-    }   */
+    }
 
     this.setVisible(true);
   }
@@ -205,7 +205,7 @@ public class Mercurial extends JFrame{
    */
   public static void main(String [] args){
     
-    Mercurial myApp = new Mercurial();
+    SelfPlanner myApp = new SelfPlanner();
     myApp.setDefaultCloseOperation(EXIT_ON_CLOSE);
     myApp.displayUI();
     myApp.addWindowListener(new WindowAdapter() {
@@ -213,6 +213,7 @@ public class Mercurial extends JFrame{
       @Override
       public void windowClosing(WindowEvent e) {
         leftUI.saveState();
+        topUI.saveState();
       }
     });
     

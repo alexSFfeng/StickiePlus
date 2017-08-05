@@ -1,4 +1,4 @@
-package mercurial;
+package mainPlanner;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -6,6 +6,13 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -76,7 +83,7 @@ public class TopUI implements ActionListener, UI_Panel {
    * Ctor for connecting TOP UI with mainframe
    * @param container: the frame to connect with
    */
-  public TopUI(Mercurial container){
+  public TopUI(SelfPlanner container){
     
     // initialize menu options
     menuBar = new JMenuBar();
@@ -222,7 +229,7 @@ public class TopUI implements ActionListener, UI_Panel {
 
     /*---------------LOAD TODAY'S TASKS)-------------*/
     this.loadTodayGoals(container.getLeftUI().getAllTasks());
-
+    this.loadState();
   }
 
   /**
@@ -493,15 +500,73 @@ public class TopUI implements ActionListener, UI_Panel {
 
   }
 
+  /**
+   * Serialize the daily task field and Memo field
+   */
   @Override
   public void saveState() {
-    // TODO Auto-generated method stub
+
+    try {
+      File topUiDateFile = new File("topUIBoxes.ser");
+      FileOutputStream fileOut = new FileOutputStream(topUiDateFile, false);
+      ObjectOutputStream objOut = new ObjectOutputStream(fileOut);
+      int numTasks = taskField.getComponentCount();
+      Object[] taskBoxes = taskField.getComponents();
+      Integer[] timeId = new Integer[numTasks];
+      String[] taskText = new String[numTasks];
+
+      for (int i = 0; i < numTasks; i++) {
+        timeId[i] = ((DailyTaskBox) taskBoxes[i]).getOrderId();
+        taskText[i] = ((DailyTaskBox) taskBoxes[i]).getTaskText();
+      }
+
+      objOut.writeObject(timeId);
+      objOut.writeObject(taskText);
+      objOut.writeObject(memoArea.getText());
+
+      objOut.close();
+      fileOut.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
   }
 
   @Override
   public void loadState() {
-    // TODO Auto-generated method stub
+
+    Object[] boxesTime = null;
+    Object[] boxesText = null;
+
+    try {
+
+      FileInputStream fileIn = new FileInputStream("topUIBoxes.ser");
+      ObjectInputStream objIn = new ObjectInputStream(fileIn);
+      boxesTime = (Object[]) objIn.readObject();
+      boxesText = (Object[]) objIn.readObject();
+
+      for (int i = 0; boxesTime != null && boxesText != null
+          && i < boxesTime.length; i++) {
+
+        new DailyTaskBox(taskField, (String) boxesText[i], (int) boxesTime[i]);
+
+      }
+
+      this.memoArea.append((String) objIn.readObject());
+      objIn.close();
+      fileIn.close();
+
+
+    } catch (FileNotFoundException e) {
+      // normal, first time opening
+    } catch (IOException e) {
+      System.err.println("Failure to read topUI data file.");
+      e.printStackTrace();
+      return;
+    } catch (ClassNotFoundException c) {
+      c.printStackTrace();
+      return;
+    }
 
   }
 

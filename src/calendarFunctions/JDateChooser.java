@@ -301,12 +301,15 @@ public class JDateChooser extends JPanel implements ActionListener,
 	}
 
 	/**
-	 * Listens for a "date" property change or a "day" property change event
-	 * from the JCalendar. Updates the date editor and closes the popup.
-	 * 
-	 * @param evt
-	 *            the event
-	 */
+   * Listens for a "date" property change or a "day" property change event from
+   * the JCalendar. Updates the date editor and closes the popup.
+   * 
+   * Modified by Shanfeng Feng Modified: to refresh MainCalendar and shows new
+   * schedule
+   * 
+   * @param evt
+   *          the event
+   */
 	public void propertyChange(PropertyChangeEvent evt) {
 	  
 		if (evt.getPropertyName().equals("day")) {
@@ -316,7 +319,8 @@ public class JDateChooser extends JPanel implements ActionListener,
 				popup.setVisible(false);
 				if (((Integer)evt.getNewValue()).intValue() > 0) {
 					setDate(jcalendar.getCalendar().getTime());
-          
+          MainCalendar.refreshCalendar(MainCalendar.getProgMonth(),
+              MainCalendar.getProgYear());
 				} else {
 					setDate(null);
 				}
@@ -324,9 +328,13 @@ public class JDateChooser extends JPanel implements ActionListener,
 		} else if (evt.getPropertyName().equals("date")) {
 			if (evt.getSource() == dateEditor) {
 				firePropertyChange("date", evt.getOldValue(), evt.getNewValue());
+
 			} else {
 				setDate((Date) evt.getNewValue());
+
 			}
+      MainCalendar.refreshCalendar(MainCalendar.getProgMonth(),
+          MainCalendar.getProgYear());
 		}
 	}
 
@@ -688,7 +696,14 @@ public class JDateChooser extends JPanel implements ActionListener,
    */
   private void writeObject(ObjectOutputStream out) throws IOException {
 
-    out.writeObject(jcalendar.getDate());
+    Date dateToBeSaved = dateEditor.getDate();
+
+    // this null check to prevent saving a null/invalid date
+    if (dateToBeSaved != null) {
+      out.writeObject(dateEditor.getDate());
+    } else {
+      out.writeObject(jcalendar.getDate());
+    }
 
   }
 

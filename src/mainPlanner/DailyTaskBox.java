@@ -1,4 +1,4 @@
-package mercurial;
+package mainPlanner;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -7,7 +7,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.Serializable;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -23,12 +22,8 @@ import javax.swing.JTextField;
  * @since 2017-08-01
  */
 public class DailyTaskBox extends JPanel
-    implements FocusListener, ItemListener, Serializable {
+    implements FocusListener, ItemListener {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -837945227972515380L;
   
   // components that makes up this box object
   private JCheckBox checkBox;
@@ -41,6 +36,21 @@ public class DailyTaskBox extends JPanel
   private static final Color FOCUS_COLOR = new Color(229, 195, 27);
 
   /**
+   * Rebuilt ctor: reading controller info and rebuild the model
+   */
+  public DailyTaskBox(JPanel targetPanel, String prevText, int timeId) {
+    checkBox = new JCheckBox();
+    taskField = new JTextField(prevText);
+    timeCombo = new JComboBox<String>();
+    selected = false;
+
+    this.initialize();
+    timeCombo.setSelectedIndex(timeId);
+    this.setBackground(targetPanel.getBackground());
+    targetPanel.add(this);
+  }
+
+  /**
    * Ctor to make the box and add to targetPanel
    * 
    * @param targetPanel:
@@ -51,41 +61,10 @@ public class DailyTaskBox extends JPanel
     // initializing instances
     checkBox = new JCheckBox();
     taskField = new JTextField();
-    timeCombo = new JComboBox();
+    timeCombo = new JComboBox<String>();
     selected = false;
 
-    /*------------- combo box setting and population--------------*/
-    timeCombo.setEditable(false);
-
-    timeCombo.addItem("Set Time");
-    timeCombo.addItem("12:00 AM");
-    timeCombo.addItem("12:30 AM");
-    for (int i = 1; i < NUM_HOURS_HALF_DAY; i++) {
-      timeCombo.addItem(i + ":00 AM");
-      timeCombo.addItem(i + ":30 AM");
-    }
-
-    timeCombo.addItem("12:00 PM");
-    timeCombo.addItem("12:30 PM");
-    for (int i = 1; i < NUM_HOURS_HALF_DAY; i++) {
-      timeCombo.addItem(i + ":00" + "PM");
-      timeCombo.addItem(i + ":30 PM");
-    }
-
-    /*--------------------task field setting -----------------------*/
-    taskField.setBackground(FOCUS_COLOR);
-    taskField.addFocusListener(this);
-
-    /*-----------------this panel appearance and setting ----------*/
-    this.setMaximumSize(BOX_DIMENSION);
-    this.setSize(BOX_DIMENSION);
-
-    /*---------------adding components to the main container--------*/
-    this.setLayout(new BorderLayout());
-    this.add(checkBox, BorderLayout.WEST);
-    this.add(timeCombo, BorderLayout.EAST);
-    this.add(taskField);
-
+    this.initialize();
     this.setBackground(targetPanel.getBackground());
     targetPanel.add(this);
   }
@@ -159,4 +138,55 @@ public class DailyTaskBox extends JPanel
     return timeCombo.getSelectedIndex();
   }
 
+  /**
+   * Get task text
+   */
+  public String getTaskText() {
+    return taskField.getText();
+  }
+
+  /**
+   * Populate comboBox
+   */
+  private void populateCombo(JComboBox<String> targetCombo) {
+
+    timeCombo.setEditable(false);
+
+    timeCombo.addItem("Set Time");
+    timeCombo.addItem("12:00 AM");
+    timeCombo.addItem("12:30 AM");
+    for (int i = 1; i < NUM_HOURS_HALF_DAY; i++) {
+      timeCombo.addItem(i + ":00 AM");
+      timeCombo.addItem(i + ":30 AM");
+    }
+
+    timeCombo.addItem("12:00 PM");
+    timeCombo.addItem("12:30 PM");
+    for (int i = 1; i < NUM_HOURS_HALF_DAY; i++) {
+      timeCombo.addItem(i + ":00" + "PM");
+      timeCombo.addItem(i + ":30 PM");
+    }
+  }
+
+  /**
+   * initialization setup
+   */
+  private void initialize() {
+    /*------------- combo box setting and population--------------*/
+    this.populateCombo(timeCombo);
+
+    /*--------------------task field setting -----------------------*/
+    taskField.setBackground(FOCUS_COLOR);
+    taskField.addFocusListener(this);
+
+    /*-----------------this panel appearance and setting ----------*/
+    this.setMaximumSize(BOX_DIMENSION);
+    this.setSize(BOX_DIMENSION);
+
+    /*---------------adding components to the main container--------*/
+    this.setLayout(new BorderLayout());
+    this.add(checkBox, BorderLayout.WEST);
+    this.add(timeCombo, BorderLayout.EAST);
+    this.add(taskField);
+  }
 }
