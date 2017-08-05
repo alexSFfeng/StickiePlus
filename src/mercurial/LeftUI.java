@@ -5,12 +5,13 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.util.Arrays;
 
 import javax.swing.BorderFactory;
@@ -57,7 +58,7 @@ public class LeftUI implements UI_Panel {
    * @param frame:
    *          the main frame of the program
    */
-  public LeftUI (Mercurial frame){
+  public LeftUI (SelfPlanner frame){
     
     // left panel initializations
     leftPanel = new JPanel(new BorderLayout());
@@ -340,13 +341,16 @@ public class LeftUI implements UI_Panel {
 
   }
 
+  /**
+   * Save the current state of the left UI by serializing all the box text area
+   * objects
+   */
   @Override
   public void saveState() {
 
     try {
-      PrintWriter pw = new PrintWriter("leftUIBoxes.ser");
-      pw.close();
-      FileOutputStream fileOut = new FileOutputStream("leftUIBoxes.ser");
+      File leftUiDateFile = new File("leftUIBoxes.ser");
+      FileOutputStream fileOut = new FileOutputStream(leftUiDateFile, false);
       ObjectOutputStream objOut = new ObjectOutputStream(fileOut);
       objOut.writeObject(leftPanelBotTop.getComponents());
       objOut.close();
@@ -357,6 +361,9 @@ public class LeftUI implements UI_Panel {
 
   }
 
+  /**
+   * Load all the serialized objects that belongs to this UI.
+   */
   @Override
   public void loadState() {
 
@@ -373,11 +380,13 @@ public class LeftUI implements UI_Panel {
         leftPanelBotTop.add((BoxTextArea) prevBoxes[i]);
       }
 
+    } catch (FileNotFoundException e) {
+      // normal, first time opening
     } catch (IOException e) {
+      System.err.println("Failure to read leftUI data file.");
       e.printStackTrace();
       return;
     } catch (ClassNotFoundException c) {
-      System.err.println("Class type error");
       c.printStackTrace();
       return;
     }

@@ -1,5 +1,6 @@
 package mercurial;
 
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 
@@ -32,19 +33,15 @@ public class BoxReverseComparator implements Comparator {
     if (((BoxTextArea) o1).isSelected() == ((BoxTextArea) o2).isSelected()) {
 
       /*-----------LATER DEADLINE COMES FIRST REGARDLESS OF PRIORITY---*/
-      Date o1Date = ((BoxTextArea) o1).getFullDate();
-      Date o2Date = ((BoxTextArea) o2).getFullDate();
+      Date o1Date = trimDate(((BoxTextArea) o1).getFullDate());
+      Date o2Date = trimDate(((BoxTextArea) o2).getFullDate());
 
       // o1's date comes after o2's date
-      if (o1Date.getYear() > o2Date.getYear()
-          && o1Date.getMonth() > o2Date.getMonth()
-          && o1Date.getDate() > o2Date.getDate()) {
+      if (o1Date.after(o2Date)) {
         return -1;
       }
       // o1's date comes before o2's date
-      else if (o1Date.getYear() < o2Date.getYear()
-          && o1Date.getMonth() < o2Date.getMonth()
-          && o1Date.getDate() < o2Date.getDate()) {
+      else if (o1Date.before(o2Date)) {
         return 1;
       }
       // same deadline, check priority
@@ -74,4 +71,20 @@ public class BoxReverseComparator implements Comparator {
     }
   }
 
+  /**
+   * Trim the Date information down to Month,Day,Year
+   * 
+   * @param targetDate:
+   *          the date to be modified
+   * @return the new date after trimming
+   */
+  private Date trimDate(Date targetDate) {
+    Calendar newCal = Calendar.getInstance();
+    newCal.setTime(targetDate);
+    newCal.set(Calendar.HOUR_OF_DAY, 0);
+    newCal.set(Calendar.MINUTE, 0);
+    newCal.set(Calendar.SECOND, 0);
+    newCal.set(Calendar.MILLISECOND, 0);
+    return newCal.getTime();
+  }
 }

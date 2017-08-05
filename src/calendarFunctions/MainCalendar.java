@@ -22,7 +22,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import mercurial.Mercurial;
+import mercurial.SelfPlanner;
 
 
 /**
@@ -46,8 +46,9 @@ public class MainCalendar extends JPanel {
       prevMonButton;
   private static JButton yearButton, monthButton, today, refresh;
   private JPopupMenu yearMenu, monthMenu;
+  private static boolean isInitialized;
 
-  private Mercurial frameRef;
+  private SelfPlanner frameRef;
 
   // appearance constants
   private static final int PANEL_WIDTH = 200;
@@ -98,7 +99,7 @@ public class MainCalendar extends JPanel {
    * @param mainFrame:
    *          the main window of the program
    */
-  public MainCalendar(Mercurial mainFrame) {
+  public MainCalendar(SelfPlanner mainFrame) {
 
     // storing reference to the mainFrame
     frameRef = mainFrame;
@@ -257,6 +258,8 @@ public class MainCalendar extends JPanel {
     this.add(daysPane);
 
     this.setBackground(CALENDAR_COLOR);
+
+    isInitialized = true;
 
     refreshCalendar(realMonth, realYear);
 
@@ -549,6 +552,9 @@ public class MainCalendar extends JPanel {
    */
   public static void refreshCalendar(int targetMonth, int targetYear) {
 
+    if (!isInitialized) {
+      return;
+    }
     /*-----------------------BUTTON ENABLE STATUS---------------------*/
 
     // enable all the buttons first
@@ -601,7 +607,7 @@ public class MainCalendar extends JPanel {
     // apply renderer
     calendarTable.setDefaultRenderer(calendarTable.getColumnClass(0),
         new MainCalendarCellRenderer(realCal, tempCalendar,
-            Mercurial.getLeftUI()));
+            SelfPlanner.getLeftUI()));
 
     updateRowHeight();
 
