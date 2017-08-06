@@ -12,6 +12,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.UIManager;
@@ -30,6 +31,8 @@ import calendarFunctions.MainCalendar;
 
 
 public class SelfPlanner extends JFrame{
+
+  private static final long serialVersionUID = -4801315076066931210L;
 
   // default frame status
   //private JFrame mainFrame;
@@ -206,14 +209,34 @@ public class SelfPlanner extends JFrame{
   public static void main(String [] args){
     
     SelfPlanner myApp = new SelfPlanner();
-    myApp.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    myApp.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     myApp.displayUI();
     myApp.addWindowListener(new WindowAdapter() {
 
       @Override
       public void windowClosing(WindowEvent e) {
-        leftUI.saveState();
-        topUI.saveState();
+
+        // prompt user to decide whether to save or not
+        int userChoice = JOptionPane.showConfirmDialog(null,
+            "Do you want to save?", "Save Before Closing",
+            JOptionPane.YES_NO_CANCEL_OPTION);
+
+        // save before exit
+        if (userChoice == JOptionPane.YES_OPTION) {
+          leftUI.saveState();
+          topUI.saveState();
+          myApp.dispose();
+        }
+
+        // exit without saving
+        if (userChoice == JOptionPane.NO_OPTION) {
+          myApp.dispose();
+        }
+
+        if (userChoice == JOptionPane.CANCEL_OPTION) {
+          // Do nothing, close pop up diaglog
+        }
+
       }
     });
     
