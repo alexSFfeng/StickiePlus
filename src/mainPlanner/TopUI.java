@@ -477,14 +477,19 @@ public class TopUI implements ActionListener, UI_Panel {
 
   /**
    * Load all of today's Tasks
+   * 
+   * @param goals:
+   *          the list of boxes to be added to today's tasks
    */
   private void loadTodayGoals(Object[] goals) {
 
+    // preparing for due date comparison
     Calendar tempCalendar = Calendar.getInstance();
     int realYear = tempCalendar.get(Calendar.YEAR);
     int realMonth = tempCalendar.get(Calendar.MONTH);
     int realDay = tempCalendar.get(Calendar.DATE);
 
+    // add back in the box to the panel if it matches the date
     for (int i = 0; i < goals.length; i++) {
 
       tempCalendar.setTime(((BoxTextArea) goals[i]).getFullDate());
@@ -501,29 +506,39 @@ public class TopUI implements ActionListener, UI_Panel {
   }
 
   /**
-   * Serialize the daily task field and Memo field
+   * Serialize the daily task field and Memo field and save the state into a
+   * data file
    */
   @Override
   public void saveState() {
 
     try {
+
+      // open file and streams for writing data (Overwrite previous file)
       File topUiDateFile = new File("topUIBoxes.ser");
       FileOutputStream fileOut = new FileOutputStream(topUiDateFile, false);
       ObjectOutputStream objOut = new ObjectOutputStream(fileOut);
+
+      // preparing objects to store task box data
       int numTasks = taskField.getComponentCount();
       Object[] taskBoxes = taskField.getComponents();
       Integer[] timeId = new Integer[numTasks];
       String[] taskText = new String[numTasks];
 
+      // recording in task box selected time and task info
       for (int i = 0; i < numTasks; i++) {
         timeId[i] = ((DailyTaskBox) taskBoxes[i]).getOrderId();
         taskText[i] = ((DailyTaskBox) taskBoxes[i]).getTaskText();
       }
 
+      // writing the data into the file
       objOut.writeObject(timeId);
       objOut.writeObject(taskText);
+
+      // writing the memo text into file
       objOut.writeObject(memoArea.getText());
 
+      // closing stream
       objOut.close();
       fileOut.close();
     } catch (IOException e) {
@@ -532,19 +547,27 @@ public class TopUI implements ActionListener, UI_Panel {
 
   }
 
+  /**
+   * Load the previously saved state by reading data file
+   */
   @Override
   public void loadState() {
 
+    // array of information to be read back
     Object[] boxesTime = null;
     Object[] boxesText = null;
 
     try {
 
+      // creating the input streams for reading info
       FileInputStream fileIn = new FileInputStream("topUIBoxes.ser");
       ObjectInputStream objIn = new ObjectInputStream(fileIn);
+
+      // initializing data storage
       boxesTime = (Object[]) objIn.readObject();
       boxesText = (Object[]) objIn.readObject();
 
+      // reconstruct task boxes base on the data last saved
       for (int i = 0; boxesTime != null && boxesText != null
           && i < boxesTime.length; i++) {
 
@@ -552,7 +575,10 @@ public class TopUI implements ActionListener, UI_Panel {
 
       }
 
+      // reconstruct memoArea's text
       this.memoArea.append((String) objIn.readObject());
+
+      // close streams
       objIn.close();
       fileIn.close();
 
