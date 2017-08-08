@@ -30,7 +30,7 @@ import calendarFunctions.MainCalendar;
  */
 
 
-public class SelfPlanner extends JFrame{
+public class StickiePlus extends JFrame{
 
   private static final long serialVersionUID = -4801315076066931210L;
 
@@ -49,7 +49,7 @@ public class SelfPlanner extends JFrame{
     
     this.setPreferredSize(new Dimension(FRAME_WIDTH,FRAME_HEIGHT));
     this.setSize(this.getPreferredSize());
-    this.setTitle("SelfPlanner");
+    this.setTitle("Stickie+");
     this.getContentPane().setBackground(Color.DARK_GRAY);
     this.setLeftUI();
     this.setTopUI();
@@ -120,9 +120,9 @@ public class SelfPlanner extends JFrame{
    * @param panel:
    *          the panel that contains the toolbar
    * @param addB:
-   *          the add button
+   *          the add button (optional button, if panel is display only)
    * @param removeB:
-   *          the remove button
+   *          the remove button (optional button, if panel is display only)
    * @param selectAll:
    *          button to select all the boxes
    * @param sortHL:
@@ -136,10 +136,27 @@ public class SelfPlanner extends JFrame{
       JButton selectAll, JButton sortHL, JButton sortLH, JToolBar toolbar) {
     
     // adding buttons and menus to toolbar
-    toolbar.add(addB);
-    toolbar.add(removeB);
+
+    // optional buttons
+    if (addB != null) {
+      toolbar.add(addB);
+      addB.setBorderPainted(false);
+
+      // set JButtons background
+      Font buttonFont = new Font(addB.getFont().getFontName(), Font.BOLD, 10);
+
+      addB.setFont(buttonFont);
+    }
+
+    if (removeB != null) {
+      toolbar.add(removeB);
+      // button appearance
+      removeB.setBorderPainted(false);
+    }
+
     toolbar.add(selectAll);
 
+    // add sort button if they exist
     if (sortHL != null) {
       toolbar.add(sortHL);
       sortHL.setBorderPainted(false);
@@ -150,17 +167,9 @@ public class SelfPlanner extends JFrame{
       sortLH.setBorderPainted(false);
     }
 
+    // appearance setting
     toolbar.setFloatable(false);
     panel.add(toolbar,BorderLayout.SOUTH);
-    
-    // set JButtons background
-    Font buttonFont = new Font(addB.getFont().getFontName(),
-        Font.BOLD, 10);
-
-    // button appearance
-    addB.setBorderPainted(false);
-    addB.setFont(buttonFont);
-    removeB.setBorderPainted(false);
     selectAll.setBorderPainted(false);
   
   }
@@ -190,6 +199,7 @@ public class SelfPlanner extends JFrame{
     }
     
   }
+
   /**
    * set the header label to be in bold font and header size
    * @param label: the JLabel to be set bold
@@ -208,9 +218,11 @@ public class SelfPlanner extends JFrame{
    */
   public static void main(String [] args){
     
-    SelfPlanner myApp = new SelfPlanner();
+    StickiePlus myApp = new StickiePlus();
     myApp.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     myApp.displayUI();
+
+    // define exit behavior
     myApp.addWindowListener(new WindowAdapter() {
 
       @Override

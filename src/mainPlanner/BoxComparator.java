@@ -73,7 +73,8 @@ public class BoxComparator implements Comparator {
   }
 
   /**
-   * Trim the Date information down to Month,Day,Year
+   * Trim the Date information down to Month,Day,Year By setting seconds, hour,
+   * minutes, millisecond to zero
    * 
    * @param targetDate:
    *          the date to be modified

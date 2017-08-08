@@ -26,10 +26,10 @@ public class BoxReverseComparator implements Comparator {
    *          the second BoxTextArea
    * @return -1 if o1 < o2, 1 if o1 > o2, 0 if o1 == o2
    */
-  @SuppressWarnings("deprecation")
   @Override
   public int compare(Object o1, Object o2) {
 
+    // if both share the same selection status proceed for more comparison
     if (((BoxTextArea) o1).isSelected() == ((BoxTextArea) o2).isSelected()) {
 
       /*-----------LATER DEADLINE COMES FIRST REGARDLESS OF PRIORITY---*/
@@ -72,7 +72,8 @@ public class BoxReverseComparator implements Comparator {
   }
 
   /**
-   * Trim the Date information down to Month,Day,Year
+   * Trim the Date information down to Month,Day,Year By setting hours, seconds,
+   * minutes, milliseconds to zero
    * 
    * @param targetDate:
    *          the date to be modified

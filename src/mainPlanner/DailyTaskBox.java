@@ -31,19 +31,30 @@ public class DailyTaskBox extends JPanel
   private JComboBox<String> timeCombo;
   private boolean selected;
 
+  // appearance constants
   private static final int NUM_HOURS_HALF_DAY = 12;
   private static final Dimension BOX_DIMENSION = new Dimension(500, 30);
   private static final Color FOCUS_COLOR = new Color(229, 195, 27);
 
   /**
    * Rebuilt ctor: reading controller info and rebuild the model
+   * 
+   * @param targetPanel:
+   *          the panel that would contain this box
+   * @param prevText:
+   *          the text that is suppose to be in the textfield
+   * @param timeId:
+   *          the index of the selected time in the combo box
    */
   public DailyTaskBox(JPanel targetPanel, String prevText, int timeId) {
+
+    // re-initialize
     checkBox = new JCheckBox();
     taskField = new JTextField(prevText);
     timeCombo = new JComboBox<String>();
     selected = false;
 
+    // set up appearance and add back to targetPanel
     this.initialize();
     timeCombo.setSelectedIndex(timeId);
     this.setBackground(targetPanel.getBackground());
@@ -140,6 +151,8 @@ public class DailyTaskBox extends JPanel
 
   /**
    * Get task text
+   * 
+   * @return the text that is currently in the textfield
    */
   public String getTaskText() {
     return taskField.getText();
@@ -147,11 +160,15 @@ public class DailyTaskBox extends JPanel
 
   /**
    * Populate comboBox
+   * 
+   * @param targetCombo:
+   *          the combo box to be populated
    */
   private void populateCombo(JComboBox<String> targetCombo) {
 
     timeCombo.setEditable(false);
 
+    // morning to noon time
     timeCombo.addItem("Set Time");
     timeCombo.addItem("12:00 AM");
     timeCombo.addItem("12:30 AM");
@@ -160,6 +177,7 @@ public class DailyTaskBox extends JPanel
       timeCombo.addItem(i + ":30 AM");
     }
 
+    // noon to night time
     timeCombo.addItem("12:00 PM");
     timeCombo.addItem("12:30 PM");
     for (int i = 1; i < NUM_HOURS_HALF_DAY; i++) {
