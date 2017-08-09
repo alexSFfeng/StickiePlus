@@ -104,7 +104,7 @@ public class BoxTextArea extends JPanel
   }
 
   /**
-   * Deep Copy constructor
+   * Deep Copy constructor for creating display only boxes in top panel
    * 
    * @param source:
    *          the copy source BoxTextArea
@@ -115,10 +115,37 @@ public class BoxTextArea extends JPanel
    */
   public BoxTextArea(BoxTextArea source, JPanel newPanel, boolean pickable) {
 
+    // setting the same traits as the source box object
     this.setup(pickable);
     this.prioritySlider.setValue(source.getPriorityLv());
     this.editable.insert(source.getTextRep(), 0);
-    source.syncText(editable);
+    JTextArea refArea = source.syncText(editable);
+
+    // syncing both boxes's text area
+    refArea.getDocument().addDocumentListener(new DocumentListener() {
+
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        if (refArea.hasFocus()) {
+          editable.setText(refArea.getText());
+        }
+      }
+
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        if (refArea.hasFocus()) {
+          editable.setText(refArea.getText());
+        }
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        // Do nothing
+      }
+
+    });
+
+    // sync both boxes slider
     source.syncSlider(prioritySlider).addChangeListener(this);
     datePickable = pickable;
 
@@ -340,18 +367,27 @@ public class BoxTextArea extends JPanel
 
   /**
    * sync text area with a corresponding box in the display panel
+   * 
+   * @param pairTextArea:
+   *          the text area to be in sync with
    */
   public JTextArea syncText(JTextArea pairTextArea) {
+
+    // listen to the target text area for text update
     pairTextArea.getDocument().addDocumentListener(new DocumentListener() {
 
       @Override
       public void insertUpdate(DocumentEvent e) {
-        editable.setText(pairTextArea.getText());
+        if (pairTextArea.hasFocus()) {
+          editable.setText(pairTextArea.getText());
+        }
       }
 
       @Override
       public void removeUpdate(DocumentEvent e) {
-        editable.setText(pairTextArea.getText());
+        if (pairTextArea.hasFocus()) {
+          editable.setText(pairTextArea.getText());
+        }
       }
 
       @Override
