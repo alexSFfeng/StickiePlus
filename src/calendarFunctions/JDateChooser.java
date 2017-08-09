@@ -304,8 +304,9 @@ public class JDateChooser extends JPanel implements ActionListener,
    * Listens for a "date" property change or a "day" property change event from
    * the JCalendar. Updates the date editor and closes the popup.
    * 
-   * Modified by Shanfeng Feng Modified: to refresh MainCalendar and shows new
-   * schedule
+   * Modified by Shanfeng Feng to fit another project function Modified: to
+   * refresh MainCalendar and shows new schedule. Display on Top UI today's task
+   * panel also refreshed
    * 
    * @param evt
    *          the event
@@ -319,22 +320,29 @@ public class JDateChooser extends JPanel implements ActionListener,
 				popup.setVisible(false);
 				if (((Integer)evt.getNewValue()).intValue() > 0) {
 					setDate(jcalendar.getCalendar().getTime());
+
+          /*---------------------MODIFIED------------------------*/
           MainCalendar.refreshCalendar(MainCalendar.getProgMonth(),
               MainCalendar.getProgYear());
+
+          /*--------------------MODIFIED--------------------------*/
 				} else {
-					setDate(null);
+          setDate(null);
 				}
 			}
 		} else if (evt.getPropertyName().equals("date")) {
 			if (evt.getSource() == dateEditor) {
 				firePropertyChange("date", evt.getOldValue(), evt.getNewValue());
 
-			} else {
-				setDate((Date) evt.getNewValue());
+        /*------------------------MODIFIED------------------------*/
+        MainCalendar.refreshCalendar(MainCalendar.getProgMonth(),
+            MainCalendar.getProgYear());
 
+        /*-----------------------MODIFIED-------------------------*/
+
+			} else {
+        setDate((Date) evt.getNewValue());
 			}
-      MainCalendar.refreshCalendar(MainCalendar.getProgMonth(),
-          MainCalendar.getProgYear());
 		}
 	}
 

@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 
 import calendarFunctions.MainCalendar;
 
@@ -58,7 +59,7 @@ public class LeftUI implements UI_Panel {
    * @param frame:
    *          the main frame of the program
    */
-  public LeftUI (SelfPlanner frame){
+  public LeftUI (StickiePlus frame){
     
     // left panel initializations
     leftPanel = new JPanel(new BorderLayout());
@@ -67,7 +68,9 @@ public class LeftUI implements UI_Panel {
     leftPanelBotTop = new JPanel();
     leftPanelBotTop.setLayout(new BoxLayout(leftPanelBotTop, BoxLayout.Y_AXIS));
     leftScroll = new JScrollPane(leftPanelBotTop);
-    myProductivity = new JLabel("Future Goals and Tasks:   ");
+    myProductivity = new JLabel("  Future Goals and Tasks:   ");
+    myProductivity.setBorder(BorderFactory
+        .createEtchedBorder(EtchedBorder.LOWERED, Color.GRAY, Color.BLACK));
     frame.setHeaderFont(myProductivity);
     
     // initial selection status is false (selectAll button hasn't been clicked)
@@ -96,7 +99,6 @@ public class LeftUI implements UI_Panel {
     // color settings
     leftPanel.setBorder(new EmptyBorder(BORDER_PADDING,BORDER_PADDING,
                                         BORDER_PADDING,BORDER_PADDING));
-    
     frame.setComponentColor(leftPanel, LEFT_GRAYSCALE);
     frame.setComponentColor(leftPanelBot, LEFT_GRAYSCALE);
     frame.setComponentColor(leftPanelBotTop, LEFT_GRAYSCALE);
@@ -111,6 +113,7 @@ public class LeftUI implements UI_Panel {
     sortHighToLow.addActionListener(new SortHighToLow());
     sortLowToHigh.addActionListener(new SortLowToHigh());
 
+    // load the previously save state of this UI_Panel
     this.loadState();
 
   }
@@ -133,7 +136,7 @@ public class LeftUI implements UI_Panel {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-      new BoxTextArea(leftPanelBotTop, LeftUI.this);
+      new BoxTextArea(leftPanelBotTop, true);
       leftPanelBotTop.revalidate();
       MainCalendar.refreshCalendar(MainCalendar.getProgMonth(),
           MainCalendar.getProgYear());
@@ -178,8 +181,11 @@ public class LeftUI implements UI_Panel {
       // since last validate doesn't not show real time visual update, needs
       // repaint
       leftPanelBotTop.repaint();
+
+      // refresh the calendar to remain in sync
       MainCalendar.refreshCalendar(MainCalendar.getProgMonth(),
           MainCalendar.getProgYear());
+
     }
 
   }
@@ -349,13 +355,20 @@ public class LeftUI implements UI_Panel {
   public void saveState() {
 
     try {
+
+      // create the file for saving and open stream to save data
       File leftUiDateFile = new File("leftUIBoxes.ser");
       FileOutputStream fileOut = new FileOutputStream(leftUiDateFile, false);
       ObjectOutputStream objOut = new ObjectOutputStream(fileOut);
+
+      // write the array of components (boxes) into file
       objOut.writeObject(leftPanelBotTop.getComponents());
+
+      // close stream
       objOut.close();
       fileOut.close();
     } catch (IOException e) {
+      System.err.println("Failure to write to file?");
       e.printStackTrace();
     }
 
@@ -370,12 +383,18 @@ public class LeftUI implements UI_Panel {
     Object[] prevBoxes = null;
     try {
 
+      // open the data file and the input stream
       FileInputStream fileIn = new FileInputStream("leftUIBoxes.ser");
       ObjectInputStream objIn = new ObjectInputStream(fileIn);
+
+      // read in the array of stored objects
       prevBoxes = (Object[]) objIn.readObject();
+
+      // close stream
       objIn.close();
       fileIn.close();
 
+      // add the box objects back to the panel
       for (int i = 0; prevBoxes != null && i < prevBoxes.length; i++) {
         leftPanelBotTop.add((BoxTextArea) prevBoxes[i]);
       }

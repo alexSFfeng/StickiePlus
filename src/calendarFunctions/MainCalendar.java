@@ -22,7 +22,8 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import mainPlanner.SelfPlanner;
+import mainPlanner.StickiePlus;
+import mainPlanner.TopUI;
 
 
 /**
@@ -48,7 +49,7 @@ public class MainCalendar extends JPanel {
   private JPopupMenu yearMenu, monthMenu;
   private static boolean isInitialized;
 
-  private SelfPlanner frameRef;
+  private StickiePlus frameRef;
 
   // appearance constants
   private static final int PANEL_WIDTH = 200;
@@ -99,7 +100,7 @@ public class MainCalendar extends JPanel {
    * @param mainFrame:
    *          the main window of the program
    */
-  public MainCalendar(SelfPlanner mainFrame) {
+  public MainCalendar(StickiePlus mainFrame) {
 
     // storing reference to the mainFrame
     frameRef = mainFrame;
@@ -441,6 +442,7 @@ public class MainCalendar extends JPanel {
     public void actionPerformed(ActionEvent e) {
 
       MainCalendar.refreshCalendar(programMonth, programYear);
+      TopUI.loadTodayGoals(StickiePlus.getLeftUI().getAllTasks());
 
     }
   }
@@ -607,7 +609,12 @@ public class MainCalendar extends JPanel {
     // apply renderer
     calendarTable.setDefaultRenderer(calendarTable.getColumnClass(0),
         new MainCalendarCellRenderer(realCal, tempCalendar,
-            SelfPlanner.getLeftUI()));
+            StickiePlus.getLeftUI()));
+
+    // refresh top UI
+    if (StickiePlus.getLeftUI() != null) {
+      TopUI.loadTodayGoals(StickiePlus.getLeftUI().getAllTasks());
+    }
 
     updateRowHeight();
 

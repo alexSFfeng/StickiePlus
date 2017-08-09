@@ -28,6 +28,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 /**
  * Panels for the program: tool bars, info display
  * 
@@ -41,15 +42,16 @@ public class TopUI implements ActionListener, UI_Panel {
   // top portion of the UI
   private JMenuBar menuBar;
   private JPanel topPanel, topLPanel, topMPanel, topRPanel;
-  private JMenu mercurial,file,view,event,goal,setting;
+  private JMenu stickiePlus, file, view, event, goal, setting;
   private JLabel shortGoals, tasks, memo;
 
   // the three top UI tasks container
-  private JPanel goalField, taskField;
+  private static JPanel goalField;
+  private JPanel taskField;
   private JScrollPane goalPane, taskPane, memoPane;
   private JTextArea memoArea;
   private JToolBar goalBar, taskBar;
-  private JButton addButtonLeft, removeButtonLeft, selectButtonLeft,
+  private JButton selectButtonLeft,
       addButtonMid, removeButtonMid, selectButtonMid, sortDailyTasks;
   private JButton sortLHighToLow, sortLLowToHigh;
 
@@ -83,26 +85,18 @@ public class TopUI implements ActionListener, UI_Panel {
    * Ctor for connecting TOP UI with mainframe
    * @param container: the frame to connect with
    */
-  public TopUI(SelfPlanner container){
+  public TopUI(StickiePlus container){
     
     // initialize menu options
     menuBar = new JMenuBar();
-    mercurial = new JMenu("Mercurial");
-    file = new JMenu("File");
-    view = new JMenu("View");
-    event = new JMenu("Event");
-    goal = new JMenu("Goal");
+    stickiePlus = new JMenu("Stickie+");
     setting = new JMenu("Setting");
     
     // initial selection status is false (select all button hasn't been clicked
     selectAllGoals = selectAllTasks = false;
 
     // add related buttons to menuBar
-    menuBar.add(mercurial);
-    menuBar.add(file);
-    menuBar.add(view);
-    menuBar.add(event);
-    menuBar.add(goal);
+    menuBar.add(stickiePlus);
     menuBar.add(setting);
     container.setJMenuBar(menuBar);
     
@@ -117,10 +111,6 @@ public class TopUI implements ActionListener, UI_Panel {
 
     /*-------------------------GOALS--------------------------*/
     goalBar = new JToolBar();
-    addButtonLeft = new JButton("+");
-    addButtonLeft.setActionCommand(ADD_GOAL);
-    removeButtonLeft = new JButton("-");
-    removeButtonLeft.setActionCommand(REMOVE_GOAL);
     selectButtonLeft = new JButton("Select All");
     selectButtonLeft.setActionCommand(SELECT_GOALS);
     sortLHighToLow = new JButton("Sort: ^");
@@ -138,9 +128,7 @@ public class TopUI implements ActionListener, UI_Panel {
 
     
     /*---------- add this UI as listener to the buttons.------------*/
-    addButtonLeft.addActionListener(this);
     addButtonMid.addActionListener(this);
-    removeButtonLeft.addActionListener(this);
     removeButtonMid.addActionListener(this);
     selectButtonLeft.addActionListener(this);
     selectButtonMid.addActionListener(this);
@@ -148,15 +136,25 @@ public class TopUI implements ActionListener, UI_Panel {
     /*----------- sort button event handling ------------------------*/
     sortLHighToLow.addActionListener(new SortBoxes());
     sortLHighToLow.setActionCommand(HIGH_LOW);
+    sortLHighToLow.setToolTipText("Sort by high priority");
     sortLLowToHigh.addActionListener(new SortBoxes());
     sortLLowToHigh.setActionCommand(LOW_HIGH);
+    sortLLowToHigh.setToolTipText("Sort by low priority");
     sortDailyTasks.addActionListener(new SortTasks());
     sortDailyTasks.setActionCommand(SORT_TASKS);
 
     /*----------- labels for panels and the corresponding text fields-------*/
     shortGoals = new JLabel("  Today's Goals: ");
+    shortGoals.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED,
+        Color.GRAY, Color.BLACK));
     tasks = new JLabel("  Daily Tasks: ");
+    tasks.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED,
+        Color.GRAY, Color.BLACK));
     memo = new JLabel("  Memo/Note:  ");
+    memo.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED,
+        Color.GRAY, Color.BLACK));
+
+    // setting the header labels
     container.setHeaderFont(shortGoals);
     container.setHeaderFont(tasks);
     container.setHeaderFont(memo);
@@ -193,7 +191,7 @@ public class TopUI implements ActionListener, UI_Panel {
         .setBorder(BorderFactory.createLineBorder(Color.BLACK, BORDER_STROKE));
     
     // add toolbars to each panel
-    container.addToolBars(topLPanel, addButtonLeft, removeButtonLeft,
+    container.addToolBars(topLPanel, null, null,
         selectButtonLeft, sortLHighToLow, sortLLowToHigh, goalBar);
     container.addToolBars(topMPanel, addButtonMid, removeButtonMid,
         selectButtonMid, sortDailyTasks, null, taskBar);
@@ -228,7 +226,7 @@ public class TopUI implements ActionListener, UI_Panel {
     container.add(topPanel,BorderLayout.NORTH);
 
     /*---------------LOAD TODAY'S TASKS)-------------*/
-    this.loadTodayGoals(container.getLeftUI().getAllTasks());
+    loadTodayGoals(StickiePlus.getLeftUI().getAllTasks());
     this.loadState();
   }
 
@@ -244,11 +242,6 @@ public class TopUI implements ActionListener, UI_Panel {
     
     /*----------------------ADDING--------------------------*/
 
-    if (e.getActionCommand().equals(ADD_GOAL)) {
-      new BoxTextArea(goalField, this);
-      goalField.revalidate();
-    }
-
     if (e.getActionCommand().equals(ADD_TASK)) {
       new DailyTaskBox(taskField);
       taskField.revalidate();
@@ -256,10 +249,6 @@ public class TopUI implements ActionListener, UI_Panel {
 
 
     /*-----------------------REMOVING----------------------*/
-
-    if (e.getActionCommand().equals(REMOVE_GOAL)) {
-      removeBox(goalField);
-    }
 
     if (e.getActionCommand().equals(REMOVE_TASK)) {
       removeBox(taskField);
@@ -314,33 +303,18 @@ public class TopUI implements ActionListener, UI_Panel {
   }
 
   /**
-   * remove a BoxTextArea object from a target Panel
+   * remove a box object from a target Panel
    * 
    * @param targetPanel:
    *          the panel that holds the BoxTextArea to be removed
    */
   private void removeBox(JPanel targetPanel) {
 
-    // remove all the selected BoxTextArea
-    if (targetPanel == goalField) {
-      for (int i = targetPanel.getComponents().length - 1; i >= 0; i--) {
-
-        if (((BoxTextArea) targetPanel.getComponent(i)).isSelected()) {
-          targetPanel.remove(i);
-          targetPanel.revalidate();
-        }
-
-      }
-
-      if (targetPanel.getComponentCount() == 0) {
-        toggleSelectButton(selectButtonLeft, selectAllGoals = false);
-      }
-    }
-
     // remove all the selected daily tasks
     if (targetPanel == taskField) {
       for (int i = targetPanel.getComponents().length - 1; i >= 0; i--) {
 
+        // if the box is selected then remove
         if (((DailyTaskBox) targetPanel.getComponent(i)).isSelected()) {
           targetPanel.remove(i);
           targetPanel.revalidate();
@@ -348,6 +322,8 @@ public class TopUI implements ActionListener, UI_Panel {
 
       }
 
+      // if after no boxes left, select button update text and the
+      // boolean for selecting all tasks becomes false
       if (targetPanel.getComponentCount() == 0) {
         toggleSelectButton(selectButtonMid, selectAllTasks = false);
       }
@@ -430,31 +406,34 @@ public class TopUI implements ActionListener, UI_Panel {
 
   }
 
+  /**
+   * Set the selection status for all the boxes in the target panel
+   * 
+   * @param containerPanel:
+   *          the panel to be act upon
+   * @param selectionMode:
+   *          the selection status that would be set
+   */
   @Override
   public void setSelection(JPanel containerPanel, boolean selectionMode) {
 
+    // selection is only available for setting if there are boxes
     if (containerPanel.getComponentCount() > 0) {
 
+      // updating the selection status of today's goal panel (select/deselect
+      // all)
       if (containerPanel == goalField) {
         selectAllGoals = selectionMode;
         toggleSelectButton(selectButtonLeft, selectionMode);
-      } else if (containerPanel == taskField) {
+      }
+      // updating the selection status of daily task panel (select/deselect all
+      else if (containerPanel == taskField) {
         selectAllTasks = selectionMode;
         toggleSelectButton(selectButtonMid, selectionMode);
       }
 
     }
   }
-
-  /**
-   * return the selection mode of the target panel
-   * 
-   * @param containerPanel:
-   *          the panel that contains BoxTextArea objects
-   * @return a boolean that tells the select button status of the specified
-   *         panel
-   */
-
 
   /**
    * Toggles the text display for the select All button (select all or deselect
@@ -481,7 +460,15 @@ public class TopUI implements ActionListener, UI_Panel {
    * @param goals:
    *          the list of boxes to be added to today's tasks
    */
-  private void loadTodayGoals(Object[] goals) {
+  public static void loadTodayGoals(Object[] goals) {
+
+    // nothing has been initialized yet
+    if (goals == null) {
+      return;
+    }
+
+    goalField.removeAll();
+    goalField.repaint();
 
     // preparing for due date comparison
     Calendar tempCalendar = Calendar.getInstance();
@@ -493,15 +480,16 @@ public class TopUI implements ActionListener, UI_Panel {
     for (int i = 0; i < goals.length; i++) {
 
       tempCalendar.setTime(((BoxTextArea) goals[i]).getFullDate());
-
+      // if the date fits today, then
       if (tempCalendar.get(Calendar.YEAR) == realYear
           && tempCalendar.get(Calendar.MONTH) == realMonth
           && tempCalendar.get(Calendar.DATE) == realDay) {
-
-        new BoxTextArea(((BoxTextArea) goals[i]), goalField, this);
+        new BoxTextArea(((BoxTextArea) goals[i]), goalField, false);
 
       }
     }
+
+    goalField.revalidate();
 
   }
 
