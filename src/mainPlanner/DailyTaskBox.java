@@ -29,6 +29,7 @@ public class DailyTaskBox extends JPanel
   private JCheckBox checkBox;
   private JTextField taskField;
   private JComboBox<String> timeCombo;
+  private JPanel refPanel;
   private boolean selected;
 
   // appearance constants
@@ -58,6 +59,7 @@ public class DailyTaskBox extends JPanel
     this.initialize();
     timeCombo.setSelectedIndex(timeId);
     this.setBackground(targetPanel.getBackground());
+    refPanel = targetPanel;
     targetPanel.add(this);
   }
 
@@ -77,6 +79,7 @@ public class DailyTaskBox extends JPanel
 
     this.initialize();
     this.setBackground(targetPanel.getBackground());
+    refPanel = targetPanel;
     targetPanel.add(this);
   }
 
@@ -90,6 +93,7 @@ public class DailyTaskBox extends JPanel
   public void focusGained(FocusEvent e) {
     taskField.setEditable(true);
     taskField.setBackground(Color.WHITE);
+    taskField.requestFocus();
   }
 
   /**
@@ -102,6 +106,7 @@ public class DailyTaskBox extends JPanel
   public void focusLost(FocusEvent e) {
     taskField.setEditable(false);
     taskField.setBackground(FOCUS_COLOR);
+    refPanel.revalidate();
   }
 
   /**
@@ -137,7 +142,7 @@ public class DailyTaskBox extends JPanel
    * @return the current status of the selection boolean
    */
   public boolean isSelected() {
-    return selected;
+    return checkBox.isSelected();
   }
 
   /**
@@ -195,7 +200,9 @@ public class DailyTaskBox extends JPanel
 
     /*--------------------task field setting -----------------------*/
     taskField.setBackground(FOCUS_COLOR);
+    taskField.requestFocus();
     taskField.addFocusListener(this);
+    checkBox.addItemListener(this);
 
     /*-----------------this panel appearance and setting ----------*/
     this.setMaximumSize(BOX_DIMENSION);
