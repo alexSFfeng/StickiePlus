@@ -322,6 +322,7 @@ public class TopUI implements ActionListener, UI_Panel {
 
       }
 
+      targetPanel.revalidate();
       // if after no boxes left, select button update text and the
       // boolean for selecting all tasks becomes false
       if (targetPanel.getComponentCount() == 0) {

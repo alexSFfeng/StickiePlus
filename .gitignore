@@ -1,5 +1,6 @@
 *.class
 *.ser
+leftUIBoxes.ser
 /bin/
 .DS_Store
 .settings
