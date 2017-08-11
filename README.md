@@ -72,6 +72,8 @@ Display the days of a month and tasks that are due in this month would also appe
 ### Miscellaneous
 This project is meant for organizing user's schedule and is free for modifying and using.
 
+To use: Download jar file and put into local folder; saved data would be generated in the folder where Stickie+.jar is located.
+
 ### Acknowledgement
 This project is develop using Eclipse, Java swing, and an external library (JCalendar).
 
