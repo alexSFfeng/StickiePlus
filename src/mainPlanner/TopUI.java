@@ -23,12 +23,18 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+
+import colorSchemes.ColorScheme;
+import colorSchemes.DeepSpace;
+import colorSchemes.GrassField;
+import colorSchemes.OceanBlue;
 /**
  * Panels for the program: tool bars, info display
  * 
@@ -42,7 +48,8 @@ public class TopUI implements ActionListener, UI_Panel {
   // top portion of the UI
   private JMenuBar menuBar;
   private JPanel topPanel, topLPanel, topMPanel, topRPanel;
-  private JMenu stickiePlus, file, view, event, goal, setting;
+  private JMenu stickiePlus, setting, colorSubMenu;
+  private JMenuItem contact;
   private JLabel shortGoals, tasks, memo;
 
   // the three top UI tasks container
@@ -90,8 +97,13 @@ public class TopUI implements ActionListener, UI_Panel {
     // initialize menu options
     menuBar = new JMenuBar();
     stickiePlus = new JMenu("Stickie+");
+    contact = new JMenuItem("Contact Us");
+    stickiePlus.add(contact);
+
     setting = new JMenu("Setting");
     
+    this.populateSetting();
+
     // initial selection status is false (select all button hasn't been clicked
     selectAllGoals = selectAllTasks = false;
 
@@ -216,18 +228,40 @@ public class TopUI implements ActionListener, UI_Panel {
     
     /*----------- add padding to the topPanel && background color-------*/
     topPanel.setBorder(new EmptyBorder(BORDER_PADDING,0,BORDER_PADDING,0));
-    container.setComponentColor(topPanel, TOP_GRAYSCALE);
-    container.setComponentColor(goalField, TOP_GRAYSCALE);
-    container.setComponentColor(taskField, TOP_GRAYSCALE);
-    container.setComponentColor(memoPane, TOP_GRAYSCALE);
-    container.setComponentColor(goalBar, TOP_GRAYSCALE);
-    container.setComponentColor(taskBar, TOP_GRAYSCALE);
     
+    this.setScheme(StickiePlus.getLeftUI().getScheme());
+
     container.add(topPanel,BorderLayout.NORTH);
 
     /*---------------LOAD TODAY'S TASKS)-------------*/
     loadTodayGoals(StickiePlus.getLeftUI().getAllTasks());
     this.loadState();
+  }
+
+  /**
+   * Populate setting menu for color scheme
+   */
+  private void populateSetting() {
+
+    colorSubMenu = new JMenu("Change color scheme");
+
+    JMenuItem space = new DeepSpace();
+    JMenuItem ocean = new OceanBlue();
+    JMenuItem grass = new GrassField();
+
+    space.setText(((ColorScheme) space).getSchemeName());
+    ocean.setText(((ColorScheme) ocean).getSchemeName());
+    grass.setText(((ColorScheme) grass).getSchemeName());
+
+    colorSubMenu.add(space);
+    colorSubMenu.add(ocean);
+    colorSubMenu.add(grass);
+
+    for (int i = 0; i < colorSubMenu.getItemCount(); i++) {
+      colorSubMenu.getItem(i).addActionListener(new ColorChangeListener());
+    }
+    setting.add(colorSubMenu);
+
   }
 
   /**
@@ -268,7 +302,7 @@ public class TopUI implements ActionListener, UI_Panel {
 
   }
 
-  /*-------------------PRIVATE CLASS SORT BUTTON HANDLING-----------------*/
+  /*-------------------PRIVATE CLASS SORT BUTTON / Menu Item HANDLING-----------------*/
 
   /**
    * Sorting all the today's goals (event handling for sort button)
@@ -298,6 +332,26 @@ public class TopUI implements ActionListener, UI_Panel {
     @Override
     public void actionPerformed(ActionEvent e) {
       sortBox(e, taskField);
+    }
+
+  }
+
+  /**
+   * Handle color scheme changing
+   * 
+   * @author Shanfeng Feng
+   * @since 2017-08-19
+   * @version 0.1
+   */
+  private class ColorChangeListener implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+      TopUI.this.setScheme((ColorScheme) e.getSource());
+      StickiePlus.getLeftUI().setScheme((ColorScheme) e.getSource());
+      StickiePlus.getMainCalendar().setScheme((ColorScheme) e.getSource());
+
     }
 
   }
@@ -491,6 +545,30 @@ public class TopUI implements ActionListener, UI_Panel {
     }
 
     goalField.revalidate();
+
+  }
+
+  /**
+   * Set whole UI color
+   */
+  public void setScheme(ColorScheme scheme) {
+
+    // panel color setting
+    StickiePlus.setComponentColor(topPanel, scheme.getTopUIShade());
+    StickiePlus.setComponentColor(goalField, scheme.getTopUIShade());
+    StickiePlus.setComponentColor(taskField, scheme.getTopUIShade());
+    StickiePlus.setComponentColor(memoPane, scheme.getTopUIShade());
+    StickiePlus.setComponentColor(goalBar, scheme.getTopUIShade());
+    StickiePlus.setComponentColor(taskBar, scheme.getTopUIShade());
+
+    // box setting
+    for (int i = 0; i < taskField.getComponentCount(); i++) {
+      taskField.getComponent(i).setBackground(scheme.getTopUIShade());
+    }
+
+    for (int i = 0; i < goalField.getComponentCount(); i++) {
+      ((BoxTextArea) goalField.getComponent(i)).setScheme(scheme);
+    }
 
   }
 
