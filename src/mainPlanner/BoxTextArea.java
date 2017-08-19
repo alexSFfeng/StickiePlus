@@ -22,6 +22,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import calendarFunctions.JDateChooser;
+import colorSchemes.ColorScheme;
 
 /**
  * check boxes that holds goal, task, and pastDue informations A check box
@@ -43,6 +44,7 @@ public class BoxTextArea extends JPanel
   
   // components of a boxTextArea
   private JTextArea editable;
+  private JTextField justDueDate;
   private JCheckBox checkbox;
   private JScrollPane boxAreaPane;
   private JSlider prioritySlider;
@@ -100,6 +102,8 @@ public class BoxTextArea extends JPanel
     // store the reference to the UI_Panel that contains this object
     datePickable = isPickable;
 
+    this.setScheme(StickiePlus.getLeftUI().getScheme());
+
     mainPanel.add(this);
   }
 
@@ -149,6 +153,8 @@ public class BoxTextArea extends JPanel
     source.syncSlider(prioritySlider).addChangeListener(this);
     datePickable = pickable;
 
+    this.setScheme(StickiePlus.getLeftUI().getScheme());
+
     newPanel.add(this);
 
   }
@@ -184,18 +190,20 @@ public class BoxTextArea extends JPanel
     if (isDatePickable) {
       dueDatePicker = new JDateChooser();
       dueDatePicker.setDate(new Date());
-      dueDatePicker.setBackground(Color.GRAY);
+      dueDatePicker.setBackground(
+          StickiePlus.getLeftUI().getScheme().getLeftUIBoxShade());
       duePanel.add(dueDatePicker);
     }
     // just create a text field if the box is not date pickable
     else {
-      JTextField justDueDate = new JTextField();
+      justDueDate = new JTextField();
 
       justDueDate
           .setText(
               "  " + new SimpleDateFormat("MMMMM dd, yyyy").format(new Date()));
       justDueDate.setEditable(false);
-      justDueDate.setBackground(Color.GRAY);
+      justDueDate.setBackground(
+          StickiePlus.getLeftUI().getScheme().getLeftUIBoxShade());
       justDueDate.setBorder(BorderFactory.createLineBorder(Color.GRAY));
       duePanel.add(justDueDate);
     }
@@ -355,6 +363,24 @@ public class BoxTextArea extends JPanel
   public String getTextRep() {
     String textStr = editable.getText();
     return textStr;
+  }
+
+  /**
+   * Set scheme Color
+   * 
+   * @param scheme:
+   *          the selected color scheme
+   */
+  public void setScheme(ColorScheme scheme) {
+    this.setBackground(scheme.getLeftUIBoxShade());
+    duePanel.setBackground(scheme.getLeftUIBoxShade());
+    if (datePickable) {
+      dueDatePicker.setBackground(scheme.getLeftUIBoxShade());
+    }
+    else {
+      justDueDate.setBackground(scheme.getLeftUIBoxShade());
+    }
+
   }
 
   /**

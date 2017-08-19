@@ -25,6 +25,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 import calendarFunctions.MainCalendar;
+import colorSchemes.ColorScheme;
+import colorSchemes.DeepSpace;
 
 /**
  * Left side UI configurations for Mercurial
@@ -44,6 +46,7 @@ public class LeftUI implements UI_Panel {
   private JButton addButtonLP, removeButtonLP, selectButton;
   private JButton sortHighToLow, sortLowToHigh;
   private boolean selectedAll;
+  private ColorScheme currentScheme;
 
   // appearance constants
   private static final int BORDER_STROKE = 3;
@@ -99,11 +102,9 @@ public class LeftUI implements UI_Panel {
     // color settings
     leftPanel.setBorder(new EmptyBorder(BORDER_PADDING,BORDER_PADDING,
                                         BORDER_PADDING,BORDER_PADDING));
-    frame.setComponentColor(leftPanel, LEFT_GRAYSCALE);
-    frame.setComponentColor(leftPanelBot, LEFT_GRAYSCALE);
-    frame.setComponentColor(leftPanelBotTop, LEFT_GRAYSCALE);
-    frame.setComponentColor(addRemoveBar, LEFT_GRAYSCALE);
     
+    this.setScheme(currentScheme = new DeepSpace());
+
     frame.add(leftPanel,BorderLayout.WEST);
     
     // listen to button actions
@@ -312,6 +313,35 @@ public class LeftUI implements UI_Panel {
   }
 
   /**
+   * Set whole UI color
+   */
+  public void setScheme(ColorScheme scheme) {
+
+    currentScheme = scheme;
+
+    // panel colors
+    StickiePlus.setComponentColor(leftPanel, scheme.getLeftUIShade());
+    StickiePlus.setComponentColor(leftPanelBot, scheme.getLeftUIShade());
+    StickiePlus.setComponentColor(leftPanelBotTop, scheme.getLeftUIShade());
+    StickiePlus.setComponentColor(addRemoveBar, scheme.getLeftUIShade());
+
+    // box colors
+    for (int i = 0; i < leftPanelBotTop.getComponentCount(); i++) {
+      ((BoxTextArea) leftPanelBotTop.getComponent(i)).setScheme(scheme);
+    }
+
+  }
+
+  /**
+   * get the current color scheme
+   * 
+   * @return the current color scheme
+   */
+  public ColorScheme getScheme() {
+    return currentScheme;
+  }
+
+  /**
    * Sets the selection status of the selectButton; if a box was manually
    * selected by user, the selectedAll boolean should be set to false so that
    * when user click selectButton afterwards, it would be in selection mode
@@ -364,6 +394,9 @@ public class LeftUI implements UI_Panel {
       // write the array of components (boxes) into file
       objOut.writeObject(leftPanelBotTop.getComponents());
 
+      // save the selected scheme
+      objOut.writeObject(currentScheme);
+
       // close stream
       objOut.close();
       fileOut.close();
@@ -389,6 +422,9 @@ public class LeftUI implements UI_Panel {
 
       // read in the array of stored objects
       prevBoxes = (Object[]) objIn.readObject();
+
+      // reload scheme
+      this.setScheme((ColorScheme) objIn.readObject());
 
       // close stream
       objIn.close();

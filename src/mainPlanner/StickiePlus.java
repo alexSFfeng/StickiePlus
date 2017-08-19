@@ -41,6 +41,7 @@ public class StickiePlus extends JFrame{
   private static final int HEADER_FONT_SIZE = 16;
   private static TopUI topUI;
   private static LeftUI leftUI;
+  private static MainCalendar mainCal;
   
   /**
    * display the user interface
@@ -110,8 +111,17 @@ public class StickiePlus extends JFrame{
    */
   public void setCalendar() {
 
-    MainCalendar mainCal = new MainCalendar(this);
+    mainCal = new MainCalendar(this);
 
+  }
+
+  /**
+   * get Calendar
+   * 
+   * @return main calendar
+   */
+  public static MainCalendar getMainCalendar() {
+    return mainCal;
   }
 
   /**
@@ -188,13 +198,13 @@ public class StickiePlus extends JFrame{
    * @param container: the container that holds all the component
    * @param grayscale: the color to be set
    */
-  public void setComponentColor(Container container, int grayscale){
+  public static void setComponentColor(Container container, Color color) {
     
-    container.setBackground(new Color(grayscale, grayscale, grayscale));
+    container.setBackground(color);
     
     for(Component c : container.getComponents()){
       
-      c.setBackground(new Color(grayscale, grayscale, grayscale));
+      c.setBackground(color);
 
     }
     

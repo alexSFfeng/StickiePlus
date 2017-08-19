@@ -22,6 +22,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
+import colorSchemes.ColorScheme;
 import mainPlanner.StickiePlus;
 import mainPlanner.TopUI;
 
@@ -118,7 +119,6 @@ public class MainCalendar extends JPanel {
     this.setLayout(new BorderLayout());
     topContainel = new JPanel(new BorderLayout());
     topContainel.setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
-    topContainel.setBackground(CALENDAR_COLOR);
 
     /*--------- setting up the year panel---------------------*/
     topYearPanel = new JPanel(new BorderLayout());
@@ -218,7 +218,6 @@ public class MainCalendar extends JPanel {
     tableModel.setRowCount(NUM_ROWS);
     tableModel.setColumnCount(NUM_COLS);
     calendarTable.setRowHeight(ROW_HEIGHT);
-    calendarTable.setBackground(CALENDAR_COLOR);
 
     /*-----------------------BUTTON EVENT LISTENERS-------------------------*/
     nextYearButton.addActionListener(new NextYearListener());
@@ -258,8 +257,6 @@ public class MainCalendar extends JPanel {
     this.add(topContainel, BorderLayout.NORTH);
     this.add(daysPane);
 
-    this.setBackground(CALENDAR_COLOR);
-
     isInitialized = true;
 
     refreshCalendar(realMonth, realYear);
@@ -287,6 +284,8 @@ public class MainCalendar extends JPanel {
 
       }
     });
+
+    this.setScheme(StickiePlus.getLeftUI().getScheme());
 
     mainFrame.add(this);
 
@@ -662,5 +661,21 @@ public class MainCalendar extends JPanel {
    */
   public static int getProgMonth() {
     return programMonth;
+  }
+
+  /**
+   * Set whole Calendar color
+   * 
+   * @param scheme:
+   *          the color scheme selected
+   */
+  public void setScheme(ColorScheme scheme) {
+
+    StickiePlus.setComponentColor(topContainel, scheme.getCalendarShade());
+    StickiePlus.setComponentColor(topYearPanel, scheme.getCalendarShade());
+    StickiePlus.setComponentColor(topMonthPanel, scheme.getCalendarShade());
+    calendarTable.setBackground(scheme.getCalendarShade());
+    this.setBackground(scheme.getCalendarShade());
+
   }
 }
