@@ -211,8 +211,21 @@ public class StickiePlus extends JFrame{
   }
 
   /**
+   * Method for setting up program for testing, no display window
+   */
+  public void testSetUp() {
+
+    this.setLeftUI();
+    this.setTopUI();
+    this.setCalendar();
+
+  }
+
+  /**
    * set the header label to be in bold font and header size
-   * @param label: the JLabel to be set bold
+   * 
+   * @param label:
+   *          the JLabel to be set bold
    */
   public void setHeaderFont(JLabel label){
     

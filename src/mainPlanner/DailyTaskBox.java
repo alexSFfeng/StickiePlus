@@ -163,6 +163,7 @@ public class DailyTaskBox extends JPanel
     return taskField.getText();
   }
 
+
   /**
    * Populate comboBox
    * 

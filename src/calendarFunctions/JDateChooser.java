@@ -55,6 +55,11 @@ import com.toedter.calendar.JCalendar;
  * visible for choosing a date. If no date editor is specified, a
  * JTextFieldDateEditor is used as default.
  * 
+ * MODIFIED by Shanfeng Feng to fit program functionality (methods modified
+ * specifications are mentioned in method header)
+ * 
+ * @version last modified 2017-08-01
+ * 
  * @author Kai Toedter
  * @version $LastChangedRevision: 149 $
  * @version $LastChangedDate: 2011-06-07 19:05:02 +0200 (Di, 07 Jun 2011) $
