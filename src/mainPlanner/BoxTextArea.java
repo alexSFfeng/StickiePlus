@@ -76,15 +76,15 @@ public class BoxTextArea extends JPanel
   private static final Color PANEL_COLOR = Color.GRAY;
 
   // default priority 4-7 Box color (YELLOW) Caution
-  private static final Color BOX_COLOR = new Color(255, 255, 55);
+  public static final Color DEFAULT_COLOR = new Color(255, 255, 55);
   private static final int CAUTION_THRESHOLD_LOW = 4;
   private static final int CAUTION_THRESHOLD_HIGH = 7;
 
   // low priority 1-3 Box color (Green) Safe
-  private static final Color SAFE_COLOR = new Color(54, 237, 88);
+  public static final Color SAFE_COLOR = new Color(54, 237, 88);
 
   // high priority 8-10 Box color (Red) Danger
-  private static final Color HIGH_PRIORITY_COLOR = new Color(239, 19, 19);
+  public static final Color HIGH_PRIORITY_COLOR = new Color(239, 19, 19);
 
   /**
    * Ctor for initializing a BoxTextArea object and responsible for adding
@@ -108,7 +108,9 @@ public class BoxTextArea extends JPanel
   }
 
   /**
-   * Deep Copy constructor for creating display only boxes in top panel
+   * Deep Copy constructor for creating display only boxes in top panel Note
+   * that copy boxes have their priority slider and text information in sync
+   * with their source box.
    * 
    * @param source:
    *          the copy source BoxTextArea
@@ -234,7 +236,7 @@ public class BoxTextArea extends JPanel
     prioritySlider.addChangeListener(this);
 
     this.setBackground(PANEL_COLOR);
-    editable.setBackground(BOX_COLOR);
+    editable.setBackground(DEFAULT_COLOR);
   }
 
   /**
@@ -285,7 +287,7 @@ public class BoxTextArea extends JPanel
       }
       // default priority color
       else {
-        editable.setBackground(BOX_COLOR);
+        editable.setBackground(DEFAULT_COLOR);
       }
 
     }
@@ -301,6 +303,17 @@ public class BoxTextArea extends JPanel
     return this.priorityLv;
   }
   
+  /**
+   * Set the priority level of this task
+   * 
+   * @param level:
+   *          the desire priority level to be set
+   */
+  public void setPriorityLv(int level) {
+    this.priorityLv = level;
+    this.prioritySlider.setValue(level);
+  }
+
   /**
    * Get priority level box color
    * 
@@ -331,7 +344,7 @@ public class BoxTextArea extends JPanel
   }
 
   /**
-   * Get the date selected by the user
+   * Get the date selected by the user if date is
    * 
    * @return the Date object that holds the due date selected if the box is not
    *         date selectable, the date return is today
@@ -353,6 +366,16 @@ public class BoxTextArea extends JPanel
    */
   public boolean isBoxEmpty() {
     return editable.getText().length() == 0;
+  }
+
+  /**
+   * Append certain text to this box object (Used for testing purposes)
+   * 
+   * @param text:
+   *          the desire string to append
+   */
+  public void appendText(String text) {
+    this.editable.append(text);
   }
 
   /**
