@@ -80,3 +80,11 @@ This project is develop using Eclipse, Java swing, and an external library (JCal
 Credits to Kai Toedter [jcalendar library link](https://toedter.com/jcalendar/)
 Date picking functionality was built on top of his JDateChooser class.
 
+## Todo
+---
+- needs to add in repetitive events functionality. To the calendar itself maybe?
+- Add manual save button in menu
+- Give the application an Icon
+- Refresh (to update today's date) (need a way for the program to track real world date in realtime)
+- Cursor focus in Daily Tasks Panel
+- Maybe remodel Daily Tasks Panel into a different layout.
